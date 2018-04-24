@@ -1,5 +1,8 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
 
     private String password;
@@ -10,7 +13,9 @@ public class User {
 
     private String lastName;
 
-   //private transient Host host; // tansient znaci da ga preskace
+    private List<Friendship> friends;
+
+    private transient Host host; // tansient znaci da ga preskace
 
    public String getPassword() {
         return password;
@@ -28,10 +33,80 @@ public class User {
         this.username = username;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public List<Friendship> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<Friendship> friends) {
+        this.friends = friends;
+    }
+
     public User(String username, String password){
         super();
         this.username = username;
         this.password = password;
-     //   this.host = null;
+        this.host = null;
+        friends= new ArrayList<>();
     }
+
+    public User(String username, String password, Host h){
+        super();
+        this.username = username;
+        this.password = password;
+        this.host = h;
+
+    }
+
+    public Friendship sendFriendRequest(String reciverUsername){
+        Friendship f = new Friendship();
+        f.setReciever(reciverUsername);
+        f.setSender(this.username);
+        f.setStatus(FriendshipStatus.PENDING);
+        friends.add(f);
+        return f;
+    }
+
+    public void acceptFriendship(String sender){
+        for (Friendship f:friends) {
+            if(f.getReciever().equals(this.username))
+                if(f.getSender().equals(sender))
+                    if(f.getStatus()==FriendshipStatus.PENDING)
+                        f.setStatus(FriendshipStatus.ACCEPTED);
+        }
+
+    }
+
+    public void denieFriendship(String sender) {
+        for (Friendship f : friends) {
+            if (f.getReciever().equals(this.username))
+                if (f.getSender().equals(sender))
+                    if (f.getStatus() == FriendshipStatus.PENDING)
+                        f.setStatus(FriendshipStatus.DENIED);
+
+        }
+    }
+
+    public void addFriendship(Friendship f){
+        friends.add(f);
+
+    }
+
+
+
 }
