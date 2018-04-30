@@ -42,7 +42,18 @@ public class HostRest {
         if(found!=null) {
         	return Response.status(Response.Status.CONFLICT).entity(new ErrorDTO("Host with same ip adress already exists.")).build();
         }else {
-        	return null;
+        	ObjectMapper mapper = new ObjectMapper();
+            String json = null;
+            try {
+                json = mapper.writeValueAsString(newHost);
+                hostDatabase.getCollection().insertOne(Document.parse(json));
+
+                //TODO notify other nodes about new node.
+
+                return Response.status(Response.Status.OK).entity(newHost).build();
+            } catch (JsonProcessingException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorDTO("Error while parsing JSON.")).build();
+            }
         }
     }
 }
