@@ -4,6 +4,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -16,7 +17,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dbClasses.HostDatabase;
-import model.Friendship;
 import model.Host;
 import rest.dto.ErrorDTO;
 
@@ -54,6 +54,28 @@ public class HostRest {
             } catch (JsonProcessingException e) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorDTO("Error while parsing JSON.")).build();
             }
+        }
+    }
+	
+	@DELETE
+    @Path("/removeHost")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removeHost(Host deletHost)
+    {
+        Document searchBy = new Document();
+        searchBy.append("address", deletHost.getAddress());
+
+        Document found = (Document) hostDatabase.getCollection().find(searchBy).first();
+     
+        if(found==null) {
+        	return Response.status(Response.Status.CONFLICT).entity(new ErrorDTO("Nonexisting host.")).build();
+        }else {
+        	hostDatabase.getCollection().deleteOne(found);//check delete method on mongodb
+
+            //TODO notify appropriate node for host removal.
+
+            return Response.status(Response.Status.OK).entity(deletHost).build();
         }
     }
 }
