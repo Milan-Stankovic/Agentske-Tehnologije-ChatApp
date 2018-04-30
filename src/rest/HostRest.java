@@ -1,5 +1,8 @@
 package rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -15,6 +18,8 @@ import org.bson.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 
 import dbClasses.HostDatabase;
 import model.Host;
@@ -49,8 +54,18 @@ public class HostRest {
                 hostDatabase.getCollection().insertOne(Document.parse(json));
 
                 //TODO notify other nodes about new node.
+                
+                //uzima celu kolekciju
+                /*DBCursor cursor = );
+                List<Host> yourList = new ArrayList<Host>();
 
-                return Response.status(Response.Status.OK).entity(newHost).build();
+                while (cursor.hasNext()) 
+                {
+                    yourList.add((Host) cursor.next());         
+                }*/
+                //ucitao sve
+
+                return Response.status(Response.Status.OK).entity(hostDatabase.getCollection().find().into(new ArrayList<Host>())).build();
             } catch (JsonProcessingException e) {
                 return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorDTO("Error while parsing JSON.")).build();
             }
