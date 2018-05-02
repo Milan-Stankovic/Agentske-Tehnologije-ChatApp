@@ -7,6 +7,7 @@ import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.websocket.EncodeException;
+import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -139,7 +140,15 @@ public class WebSocket {
 		  this.s= s;
 		  
 	    }
-	
-	
+
+	  @OnClose
+	  public void closeConnection(@PathParam("user") String user, Session s ) {
+		for (Session temp : s.getOpenSessions()) {
+			if(s.getUserProperties().get("user").equals(user)) {
+				s.getOpenSessions().remove(temp);
+				break;
+			}
+		}	  
+	  }
 	
 }

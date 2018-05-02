@@ -2,6 +2,7 @@ package rest;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.faces.flow.SwitchCase;
 import javax.inject.Inject;
 import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
@@ -14,8 +15,15 @@ import javax.ws.rs.core.Response;
 
 import org.bson.Document;
 
+import com.google.gson.Gson;
+
 import dbClasses.UserDatabase;
 import model.Friendship;
+import model.FriendshipStatus;
+import model.Group;
+import model.NotificationDTO;
+import model.NotificationType;
+import model.User;
 
 @LocalBean
 @Path("/notify")
@@ -25,6 +33,9 @@ public class NotificationRest {
 	@Inject
 	private UserDatabase userDatabase;
 	
+	@Inject
+	private PushNotifications wsNotifications;
+	
 	@POST
 	@Path("{username}/notifyFriendshipStart")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -33,10 +44,12 @@ public class NotificationRest {
 		Document foundSender = (Document) userDatabase.getCollection().find(new Document("username", addedFriendship.getSender())).first();
 		Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", addedFriendship.getSender())).first();
 		
+		
 		if(foundReciver==null||foundSender==null) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}else {
-			//Notify via websocket
+			
+			updateFriendship(FriendshipStatus.PENDING, foundSender, foundReciver, userName);
 			return null;
 		}
 	}
@@ -52,9 +65,52 @@ public class NotificationRest {
 		if(foundReciver==null||foundSender==null) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}else {
-			//Notify via websocket
+			updateFriendship(FriendshipStatus.DELETED, foundSender, foundReciver, userName);
 			return null;
 		}
+	}
+	
+	private void updateFriendship(FriendshipStatus f, Document foundSender, Document foundReciver, String userName) {
+		Gson gson = new Gson();
+	      	User person1 = gson.fromJson(foundSender.toJson(), User.class);   
+	      	User person2 = gson.fromJson(foundReciver.toJson(), User.class);  
+	      	String username;
+	      	if(person1.getUsername().equals(userName))
+	      		username=person2.getUsername();
+	      	else 
+	      		username = person1.getUsername();
+	      	
+		NotificationDTO n = new NotificationDTO();
+		n.setRecieverId(userName);
+	
+		switch (f) {
+		case ACCEPTED:
+			n.setType(NotificationType.ACCEPTED);
+			break;
+		case BLOCKED:
+			n.setType(NotificationType.REMOVED);
+			
+			break;
+		case DECLINED:
+			n.setType(NotificationType.REMOVED);
+	
+			break;
+		case DELETED:
+			n.setType(NotificationType.REMOVED);
+	
+			break;
+		case PENDING:
+			n.setType(NotificationType.PENDING);
+			break;
+
+		default:
+			n.setType(NotificationType.ACCEPTED);
+			break;
+		}
+		
+		n.setUserId(username);
+		wsNotifications.pushNotification(n);
+		
 	}
 	
 	@POST
@@ -68,17 +124,27 @@ public class NotificationRest {
 		if(foundReciver==null||foundSender==null) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}else {
-			//Notify via websocket
+			updateFriendship(updated.getStatus(), foundSender, foundReciver, userName);
 			return null;
 		}
+	}
+	
+	private void groupUpdate(String userName, String groupId, NotificationType type) {
+		NotificationDTO n = new NotificationDTO();
+		n.setRecieverId(userName);
+		n.setGroupId(groupId);
+		n.setType(type);
+		wsNotifications.pushNotification(n);
 	}
 	
 	@POST
 	@Path("{username}/notifyNewGroup")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyNewGroup(@PathParam("userName") String userName) {
-		//notify via websocket
+	private Response notifyNewGroup(@PathParam("userName") String userName, Group g) {
+		
+		groupUpdate(userName, g.getId(), NotificationType.GROUPADD);
+		
 		return null;
 	}
 	
@@ -86,8 +152,10 @@ public class NotificationRest {
 	@Path("{username}/notifyEndGroup")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyEndGroup(@PathParam("userName") String userName) {
-		//notify via websocket
+	private Response notifyEndGroup(@PathParam("userName") String userName, Group g) {
+		
+		groupUpdate(userName, g.getId(), NotificationType.GROUPREMOVE);
+		
 		return null;
 	}
 	
@@ -95,7 +163,8 @@ public class NotificationRest {
 	@Path("{username}/notifyNewGroupMember")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyNewGroupMember(@PathParam("userName") String userName) {
+	private Response notifyNewGroupMember(@PathParam("userName") String userName, Group g) {
+		groupUpdate(userName, g.getId(), NotificationType.GROUPNEWUSER);
 		return null;
 	}
 	
@@ -103,7 +172,8 @@ public class NotificationRest {
 	@Path("{username}/notifyRemovedUser")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyRemovedUser(@PathParam("userName") String userName) {
+	private Response notifyRemovedUser(@PathParam("userName") String userName, Group g) {
+		groupUpdate(userName, g.getId(), NotificationType.GROUPREMOVE);
 		return null;
 	}
 
