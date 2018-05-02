@@ -34,6 +34,51 @@ public class UserBean {
 	private String masterIp;
 	private ArrayList<Host> registeredHosts;
 	
+	
+	
+	
+	public ArrayList<User> getActiveUsers() {
+		return activeUsers;
+	}
+
+
+
+
+	public void setActiveUsers(ArrayList<User> activeUsers) {
+		this.activeUsers = activeUsers;
+	}
+
+
+
+
+	public String getMasterIp() {
+		return masterIp;
+	}
+
+
+
+
+	public void setMasterIp(String masterIp) {
+		this.masterIp = masterIp;
+	}
+
+
+
+
+	public ArrayList<Host> getRegisteredHosts() {
+		return registeredHosts;
+	}
+
+
+
+
+	public void setRegisteredHosts(ArrayList<Host> registeredHosts) {
+		this.registeredHosts = registeredHosts;
+	}
+
+
+
+
 	@PostConstruct
 	private void init() {
 		BufferedReader br = null;
