@@ -56,26 +56,26 @@ public class UserBean {
 		ResteasyClient client = new ResteasyClientBuilder().build();
 		
 		ResteasyWebTarget target = client.target(
-				"http://" + masterIp + ":8080/ChatApp/hosts/registerHost/");
+				"http://" + masterIp + ":8096/UserApp/hosts/registerHost/");
 		
 		Response response = target.request(MediaType.APPLICATION_JSON).get();
 		
 		if(Response.Status.OK.ordinal()==response.getStatus()) {
 			String listString= response.readEntity(String.class);
 			Gson gson=new Gson();
-			Type type = new TypeToken<List<String>>(){}.getType();
+			Type type = new TypeToken<List<Host>>(){}.getType();
 			registeredHosts = gson.fromJson(listString, type);
 			
 			ResteasyClient client1 = new ResteasyClientBuilder().build();
 			
 			ResteasyWebTarget target1 = client1.target(
-					"http://" + masterIp + ":8080/ChatApp/users/activeUsers");
+					"http://" + masterIp + ":8096/UserApp/users/getActive");
 			
 			Response response1 = target1.request(MediaType.APPLICATION_JSON).get();
 			
 			String listString1= response1.readEntity(String.class);
 			Gson gson1=new Gson();
-			Type type1 = new TypeToken<List<String>>(){}.getType();
+			Type type1 = new TypeToken<List<User>>(){}.getType();
 			activeUsers = gson1.fromJson(listString1, type1);
 		}
 		else {
