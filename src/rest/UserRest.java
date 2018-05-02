@@ -31,8 +31,8 @@ public class UserRest {
 	@Inject
 	private UserBean users;
 	
-	@Inject
-	private WebSocket ws;
+	/*@Inject
+	private WebSocket ws;*/
 	
 	@Inject 
 	private UserDatabase userDatabase;
@@ -116,12 +116,12 @@ public class UserRest {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	private void getMessage(Message m) {
-		try {
+		/*try {
 			ws.forwardMessage(m);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 
