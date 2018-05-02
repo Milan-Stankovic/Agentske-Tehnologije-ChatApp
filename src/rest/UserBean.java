@@ -53,10 +53,10 @@ public class UserBean {
 			System.out.println("Error while loading config.txt");
 		}
 		
-		ResteasyClient client = new ResteasyClientBuilder().build();
+		/*ResteasyClient client = new ResteasyClientBuilder().build();
 		
 		ResteasyWebTarget target = client.target(
-				"http://" + masterIp + ":8080/ChatApp/hosts/registerHost/");
+				"http://" + masterIp + ":8096/UserApp/hosts/registerHost/");
 		
 		Response response = target.request(MediaType.APPLICATION_JSON).get();
 		
@@ -69,7 +69,7 @@ public class UserBean {
 			ResteasyClient client1 = new ResteasyClientBuilder().build();
 			
 			ResteasyWebTarget target1 = client1.target(
-					"http://" + masterIp + ":8080/ChatApp/users/activeUsers");
+					"http://" + masterIp + ":8096/UserApp/users/activeUsers");
 			
 			Response response1 = target1.request(MediaType.APPLICATION_JSON).get();
 			
@@ -81,7 +81,7 @@ public class UserBean {
 		else {
 			System.out.println("Host aready exsists.");
 		}
-		
+		*/
 		
 	}
 	
