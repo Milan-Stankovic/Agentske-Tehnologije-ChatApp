@@ -17,6 +17,8 @@ import javax.ws.rs.Path;
 
 import model.Host;
 import model.User;
+import java.net.*;
+import java.io.*;
 
 @LocalBean
 @Path("/hosts")
@@ -108,9 +110,13 @@ public class UserBean {
 		    }
 		    masterIp = sb.toString();
 		    
-		    InetAddress IP=InetAddress.getLocalHost();
-		    //System.out.println("IP of my system is := "+IP.getHostAddress());
-		    System.out.println("I am registring myself.\n Master IP is: "+masterIp+"My IP is: "+getLocalHostLANAddress().toString());
+		    URL whatismyip = new URL("http://checkip.amazonaws.com");
+		    BufferedReader in = new BufferedReader(new InputStreamReader(
+		                    whatismyip.openStream()));
+
+		    String ip = in.readLine();
+		    
+		    System.out.println("I am registring myself.\n Master IP is: "+masterIp+"My IP(global) is: "+ip+"\nMy IP(local) is: " + getLocalHostLANAddress().toString());
 		} catch (Exception e) {
 			System.out.println("Error while loading config.txt");
 		}
