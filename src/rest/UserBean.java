@@ -31,12 +31,29 @@ import model.User;
 public class UserBean {
 	
 	private ArrayList<User> activeUsers;
-	private String masterIp;
 	private ArrayList<Host> registeredHosts;
+	private String masterIp;
+	private String currentIp;
 	
 	
 	
 	
+	
+	
+	public String getCurrentIp() {
+		return currentIp;
+	}
+
+
+
+
+	public void setCurrentIp(String currentIp) {
+		this.currentIp = currentIp;
+	}
+
+
+
+
 	public ArrayList<User> getActiveUsers() {
 		return activeUsers;
 	}
