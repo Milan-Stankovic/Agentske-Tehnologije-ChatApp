@@ -322,7 +322,7 @@ public class UserRest {
 		   	    	ResteasyClient client = new ResteasyClientBuilder().build();
 		 			
 		 			ResteasyWebTarget target = client.target(
-		 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/login");
+		 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/users/login");
 		 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user,MediaType.APPLICATION_JSON));
 		 			returnStr = response.readEntity(String.class);
 	   	    	 
