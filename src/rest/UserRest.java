@@ -76,6 +76,18 @@ public class UserRest {
 	
 	
 	@GET
+    @Path("/test")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String Test(){
+
+
+        return "TEST!";
+    }
+      
+	
+	
+	
+	@GET
 	@Path("/notifyFriend/{userName}/firend/{user2}/{tip}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
