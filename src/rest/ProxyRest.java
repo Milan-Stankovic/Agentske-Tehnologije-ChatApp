@@ -221,7 +221,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO(groupId, JMSStatus.REMOVE_USER_GROUP, userId+"---"+sendingId));
 			return null;
 		}
 	
