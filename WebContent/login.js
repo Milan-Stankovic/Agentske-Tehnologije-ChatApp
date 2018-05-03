@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-		.module('app')
+		.module('app',[])
 		.controller('loginController', loginController);
 
     loginController.$inject = ['$scope', '$rootScope','$http', '$cookies', '$window'];

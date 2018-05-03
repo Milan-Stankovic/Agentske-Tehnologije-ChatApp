@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-		.module('app')
+		.module('app',['ngCookies'])
 		.controller('registerController', registerController);
 
     registerController.$inject = ['$scope', '$rootScope','$http', '$cookies', '$window'];
@@ -17,17 +17,19 @@
         	var data = {
         	    "username" : username,
         	    "password" :pass, 
-        	    "firstName" : firstName, 
+        	    "name" : firstName, 
         	    "lastName" : lastName, 
         	    "hostIp" : ""
         	}
+        	console.log(data);
             $http({
               method: 'POST',
-              url: 'http://localhost:8096/ChatApp/rest/register/',
+              url: 'http://localhost:8096/ChatApp/rest/users/register',
               data: data
             }).then(function successCallback(response) {
                 var user = response.data;
-
+                console.log(user);
+                console.log("HELOOO ! ");
                 
                 }, function errorCallback(response) {
                  $scope.message="Error.";
