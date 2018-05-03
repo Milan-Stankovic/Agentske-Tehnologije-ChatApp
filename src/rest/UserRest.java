@@ -7,6 +7,7 @@ import java.util.Arrays;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jws.soap.SOAPBinding.Use;
 import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -26,9 +27,13 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import com.google.gson.Gson;
 import com.mongodb.client.FindIterable;
 
+import dbClasses.FriendshipDatabase;
+import dbClasses.GroupDatabase;
+import dbClasses.MessageDatabase;
 import dbClasses.UserDatabase;
 import model.Friendship;
 import model.FriendshipStatus;
+import model.Group;
 import model.Message;
 import model.NotificationDTO;
 import model.NotificationType;
@@ -50,6 +55,16 @@ public class UserRest {
 	
 	@Inject
 	private PushNotifications wsPushNotif;
+	
+	@Inject 
+	private FriendshipDatabase friendDb;
+	
+	
+	@Inject
+	private MessageDatabase messageDb;
+	
+	@Inject
+	private GroupDatabase groupDb;
 	
 
 	@GET
@@ -98,7 +113,7 @@ public class UserRest {
 		Gson gson = new Gson();
 		if(isG.equals("Y")) {
 
-			FindIterable<Document> docs = userDatabase.getCollection().find(new Document("groupId", id)).sort(new Document("created_at",1));
+			FindIterable<Document> docs = messageDb.getCollection().find(new Document("groupId", id)).sort(new Document("created_at",1));
 		    for (Document doc : docs) {
 	  	    	 Message m = gson.fromJson(doc.toJson(), Message.class);
 	  	    	 messages.add(m);
@@ -200,6 +215,85 @@ public class UserRest {
  	    }
 		
 	}
+	
+	@GET
+    @Path("/getFriends/{username}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ArrayList<User> getFriends(@PathParam("username") String userName){
+		ArrayList<User> users = new ArrayList<>();
+		
+	  	Document or1 = new Document(
+	  		  "$and", Arrays.asList(
+	  		    new Document("sender", userName),
+	  		    new Document("status", FriendshipStatus.ACCEPTED)
+	  		  )
+	  		);
+	  	
+	  	
+		Document or2 = new Document(
+		  		  "$and", Arrays.asList(
+		  		    new Document("reciever", userName),
+		  		    new Document("status", FriendshipStatus.ACCEPTED)
+		  		  )
+		  		);
+		
+		Document query = new Document(
+		  		  "$or", Arrays.asList(
+		  		  or1,
+		  		  or2
+		  		  )
+		  		);
+		
+		Gson gson= new Gson();
+		 @SuppressWarnings("unchecked")
+  	     FindIterable<Document> docs = friendDb.getCollection().find(query).sort(new Document("created_at",1));//valjda sortira
+  	     for (Document doc : docs) {
+  	    	 Friendship m = gson.fromJson(doc.toJson(), Friendship.class);
+  	    	 
+  	    	 String user="";
+  	    	 if(m.getReciever().equals(userName))
+  	    		 user=m.getSender();
+  	    	 else
+  	    		 user=m.getReciever();
+  	    	 
+  	    	 Document found = (Document) userDatabase.getCollection().find(new Document("username", user));
+  	     	 if(found != null) {
+  	     		 User u = gson.fromJson(found.toJson(), User.class);
+  	     		 users.add(u);
+  	     		 
+  	     	 }
+  	    	 
+  	    	
+  	     }
+		
+		return users;
+		
+	}
+	
+	
+	@GET
+    @Path("/getGroups/{username}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ArrayList<Group> getGroups(@PathParam("username") String userName){
+		ArrayList<Group> groups = new ArrayList<>();
+		
+		FindIterable<Document> docs = groupDb.getCollection().find();
+		Gson gson = new Gson();
+		for (Document document : docs) {
+			Group g = gson.fromJson(document.toJson(), Group.class);
+			for (User u : g.getUsers()) {
+				if(u.getUsername().equals(userName)) 
+					groups.add(g);
+					
+			}
+ 	    	 
+		}
+  	    
+		return groups;
+		
+	}
+	
+	
 	
 	
 	@POST
