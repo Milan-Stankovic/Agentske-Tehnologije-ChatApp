@@ -3,6 +3,7 @@ package rest;
 import java.io.IOException;
 
 import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.websocket.EncodeException;
@@ -23,7 +24,7 @@ import model.Message;
 import model.NotificationDTO;
 
 @LocalBean
-@Stateful
+@Singleton
 @ServerEndpoint(
 		
 	    value = "/notification/{user}",
@@ -92,9 +93,16 @@ public class PushNotifications {
 	 }
 	
 	public void pushNotification(NotificationDTO n) {
+		
+		System.out.println(n);
+		System.out.println(s);
+		
 		 for (Session peer : s.getOpenSessions()) {
 	        	if(peer.getUserProperties().get("user").toString().equals(n.getRecieverId())) {
+
+	        		peer.getAsyncRemote().sendText(n.toString());
 	        		peer.getAsyncRemote().sendObject(n);
+	        		
 	        	
 	        }
 		 }
@@ -103,7 +111,11 @@ public class PushNotifications {
 	
 	 @OnOpen
 	 public void userConnectedCallback(@PathParam("user") String user, Session s) {
+		 
+		 System.out.println("UPAO JE U OPEN");
 		  s.getUserProperties().put("user", user);
+		  System.out.println("Ovo je user : " + user);
+		  System.out.println(s);
 		  this.s= s;
 		  
 	    }

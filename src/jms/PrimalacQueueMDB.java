@@ -43,6 +43,8 @@ public class PrimalacQueueMDB implements MessageListener {
 		ObjectMessage omsg = (ObjectMessage) msg;
 		try {
 			jmsDTO aclMessage = (jmsDTO) omsg.getObject();
+			log.info("Evo ide zahtev za prijateljstvo na: "+((Friendship)aclMessage.getContent()).getReciever());
+			
 			
 			NotificationDTO n = new NotificationDTO();
 			

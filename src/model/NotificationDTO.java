@@ -56,6 +56,12 @@ public class NotificationDTO {
 		this.type=temp.type;
 		this.userId=temp.userId;
 	}
+
+	@Override
+	public String toString() {
+		return "NotificationDTO [userId=" + userId + ", groupId=" + groupId + ", recieverId=" + recieverId + ", type="
+				+ type + "]";
+	}
 	
 
 }

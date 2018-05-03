@@ -1,8 +1,10 @@
 package model;
 
+import java.io.Serializable;
+
 import javax.persistence.Id;
 
-public class Friendship {
+public class Friendship implements Serializable{
 
     @Id
     private String id;
