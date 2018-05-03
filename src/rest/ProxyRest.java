@@ -35,7 +35,7 @@ public class ProxyRest {
 	private UserBean nodeInfo;
 	
 	private boolean checkIfMaster() {
-		return nodeInfo.getMasterIp().equals(nodeInfo.getCurrentIp());
+		return !nodeInfo.getMasterIp().equals(nodeInfo.getCurrentIp());
 	}
 	
 	@POST

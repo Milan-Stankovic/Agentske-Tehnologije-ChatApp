@@ -27,6 +27,9 @@ import com.google.gson.Gson;
 import com.mongodb.client.FindIterable;
 
 import dbClasses.UserDatabase;
+import jms.JMSQueue;
+import jms.JMSStatus;
+import jms.jmsDTO;
 import model.Friendship;
 import model.FriendshipStatus;
 import model.Message;
@@ -50,6 +53,13 @@ public class UserRest {
 	
 	@Inject
 	private PushNotifications wsPushNotif;
+	
+	@Inject
+	private UserBean nodeInfo;
+	
+	private boolean checkIfMaster() {
+		return !nodeInfo.getMasterIp().equals(nodeInfo.getCurrentIp());
+	}
 	
 
 	@GET
@@ -213,14 +223,15 @@ public class UserRest {
 	   		  Gson gson = new Gson();
 	   	      User user = gson.fromJson(found.toJson(), User.class);  
 	   	      if(user.getUsername().equals(password)) {
-	   	    	  
-	   	    	ResteasyClient client = new ResteasyClientBuilder().build();
-	 			
-	 			ResteasyWebTarget target = client.target(
-	 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/login");
-	 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user,MediaType.APPLICATION_JSON));
-	 			returnStr = response.readEntity(String.class);
-	 			
+	   	    	 
+	   	    	 
+		   	    	ResteasyClient client = new ResteasyClientBuilder().build();
+		 			
+		 			ResteasyWebTarget target = client.target(
+		 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/login");
+		 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user,MediaType.APPLICATION_JSON));
+		 			returnStr = response.readEntity(String.class);
+	   	    	 
 	 			  boolean active= false;
 	 	   	      for (User user2 : users.getActiveUsers()) {
 	 					if(user2.getUsername().equals(user.getUsername())) {
