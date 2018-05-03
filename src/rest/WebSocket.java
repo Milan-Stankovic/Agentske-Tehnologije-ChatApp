@@ -3,8 +3,7 @@ package rest;
 import java.io.IOException;
 
 import javax.ejb.LocalBean;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -33,7 +32,7 @@ import model.Message;
 import model.User;
 
 @LocalBean
-@Stateful
+@Singleton
 @ServerEndpoint(
 		
 	    value = "/chat/{user}/",

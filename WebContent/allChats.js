@@ -15,7 +15,7 @@
     	}
     	
     	$scope.notifications=[];
-    	$scope.notification.text="";
+    	//$scope.notification.text="";
     	
     	
     	var ws = new WebSocket("ws://localhost:8096/ChatApp/notification/"+$window.localStorage.getItem("user"));
