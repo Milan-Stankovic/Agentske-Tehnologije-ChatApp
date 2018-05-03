@@ -94,10 +94,11 @@ public class PushNotifications {
 	
 	public void pushNotification(NotificationDTO n) {
 		
-		System.out.println(n);
+		System.out.println("U PUSH NOTIFICATION SAM : "+  n);
 		System.out.println(s);
 		
 		 for (Session peer : s.getOpenSessions()) {
+			 System.out.println("NASAO SAM GA U PUSHU");
 	        	if(peer.getUserProperties().get("user").toString().equals(n.getRecieverId())) {
 
 	        		peer.getAsyncRemote().sendText(n.toString());

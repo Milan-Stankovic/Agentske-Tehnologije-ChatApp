@@ -81,7 +81,7 @@ public class UserRest {
     @Produces(MediaType.APPLICATION_JSON)
 	private void notify(@PathParam("userName") String userName, @PathParam("user2") String user2, @PathParam("tip") String tip) {
 	
-		 System.out.println("Ima aktivnih koji su prijatelji!!!");
+		 System.out.println("RADI NOTIFY FRIEND U CHAT APPU");
 		  NotificationDTO temp = new NotificationDTO();
 		  temp.setRecieverId(user2);
 		  temp.setUserId(userName);
@@ -298,6 +298,10 @@ public class UserRest {
 		String returnStr="";
 	 	Document found = (Document) userDatabase.getCollection().find(new Document("username", userName)).first();
 	 	if(found != null) {
+	 		
+	 		
+	 		userDatabase.getCollection().updateOne(found,new Document("$set", new Document("hostIp", users.getCurrentIp())));
+	 		
 	   		  Gson gson = new Gson();
 	   	      User user = gson.fromJson(found.toJson(), User.class);  
 	   	      if(user.getPassword().equals(password)) {
