@@ -14,6 +14,8 @@
     		
     	}
     	
+    	$scope.notifications=[];
+    	$scope.notification.text="";
     	
     	
     	var ws = new WebSocket("ws://localhost:8096/ChatApp/notification/"+$window.localStorage.getItem("user"));
@@ -42,6 +44,10 @@
         function listener(data) {
           var messageObj = data;
           console.log("Received data from websocket: ", messageObj);
+          
+          var notification ={};
+          notification.tekst = messageObj;// OVDE MI ISPARSIRAJ DA NOTIFICATION TEXT LICI NA NESTO :D
+          $scope.notifications.push(messageObj);
          
         }
     	
