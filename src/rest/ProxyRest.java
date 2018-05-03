@@ -3,6 +3,7 @@ package rest;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,20 +36,35 @@ public class ProxyRest {
 	@Inject
 	private UserBean nodeInfo;
 	
-	private boolean checkIfMaster() {
-		return !nodeInfo.getMasterIp().equals(nodeInfo.getCurrentIp());
+	private boolean checkIfMaster(String ip) {
+		return !nodeInfo.getMasterIp().equals(ip);
 	}
+	
+	@GET
+    @Path("/test")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String Test(@Context HttpServletRequest requestContext){
+
+
+        return requestContext.getRemoteAddr();
+    }
+      
 	
 	@POST
 	@Path("/newFriendship")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createFriendship(Friendship newFriendship)
+    public Response createFriendship(@Context HttpServletRequest requestContext, Friendship newFriendship)
     {
-		if(checkIfMaster()) {
+		
+		 String ip = requestContext.getRemoteAddr();
+		 
+		if(checkIfMaster(ip)) {
 			ResteasyClient client = new ResteasyClientBuilder().build();
+			System.out.println("GADJAM: "+ 
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/friendship");
 			ResteasyWebTarget target = client.target(
-					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/friendship");
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/friendship");
 			return target.request(MediaType.APPLICATION_JSON).post(Entity.entity(newFriendship, MediaType.APPLICATION_JSON));
 			/*if(Response.Status.OK.equals(response.getStatus())) {
 				return Response.status(Response.Status.OK).entity(newFriendship).build();
@@ -66,12 +83,15 @@ public class ProxyRest {
 	@Path("/deleteFriendship")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteFriendship(Friendship toDelete)
+    public Response deleteFriendship(@Context HttpServletRequest requestContext, Friendship toDelete)
     {
-		if(checkIfMaster()) {		
+		System.out.println("DELETEEEEEEEEE");
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {	
+			System.out.println("DELETEEEEEEEEE AL U IFU");
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
-					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/friendship");
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/friendship/delete");
 			
 			return target.request(MediaType.APPLICATION_JSON).post(Entity.entity(toDelete, MediaType.APPLICATION_JSON));
 			/*if(Response.Status.OK.equals(response.getStatus())) {
@@ -91,9 +111,10 @@ public class ProxyRest {
 	@Path("/putFriendship")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response putFriendship(Friendship toDelete)
+    public Response putFriendship(@Context HttpServletRequest requestContext, Friendship toDelete)
     {
-		if(checkIfMaster()) {		
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {	
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
 					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/friendship");
@@ -115,8 +136,9 @@ public class ProxyRest {
     @Path("/groups/{groupId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGroup(@PathParam("groupId") String groupId) {
-		if(checkIfMaster()) {		
+    public Response getGroup(@Context HttpServletRequest requestContext, @PathParam("groupId") String groupId) {
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {		
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
 					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/groups/group/"+groupId);
@@ -138,13 +160,14 @@ public class ProxyRest {
 	@Path("/groups")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response newGroup(Group toCreate) {
-		if(checkIfMaster()) {		
+	public Response newGroup(@Context HttpServletRequest requestContext, Group toCreate) {
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {	
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
-					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/groups/group/");
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/groups/group/");
 			
-			return target.request(MediaType.APPLICATION_JSON).put(Entity.entity(toCreate, MediaType.APPLICATION_JSON));
+			return target.request(MediaType.APPLICATION_JSON).post(Entity.entity(toCreate, MediaType.APPLICATION_JSON));
 			/*if(Response.Status.OK.equals(response.getStatus())) {
 				return Response.status(Response.Status.OK).entity(response.getEntity()).build();
 			}else {
@@ -161,8 +184,9 @@ public class ProxyRest {
 	@Path("/groups/delete")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response deleteGroup(Group toDelete) {
-		if(checkIfMaster()) {		
+	public Response deleteGroup(@Context HttpServletRequest requestContext, Group toDelete) {
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {	
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
 					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/groups/group/delete");
@@ -184,9 +208,10 @@ public class ProxyRest {
     @Path("/group/{groupId}/users")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addUser(@PathParam("groupId") String groupId,User toAdd) {
+    public Response addUser(@Context HttpServletRequest requestContext, @PathParam("groupId") String groupId,User toAdd) {
 		System.out.println("USO U REST!!!");
-		if(checkIfMaster()) {		
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {		
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
 					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/groups/group/"+groupId+"/users");
@@ -208,11 +233,16 @@ public class ProxyRest {
     @Path("/group/{groupId}/users/{userId}/sender/{sendingId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response removeUser(@PathParam("groupId") String groupId, @PathParam("userId") String userId, @PathParam("sendingId") String sendingId) {
-		if(checkIfMaster()) {		
+    public Response removeUser(@Context HttpServletRequest requestContext, @PathParam("groupId") String groupId, @PathParam("userId") String userId, @PathParam("sendingId") String sendingId) {
+		String ip = requestContext.getRemoteAddr();
+		if(checkIfMaster(ip)) {		
+			System.out.println("USO I GADJA: " + 
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/groups/group/"+groupId+"/users/"+userId+"/sender/"+sendingId);
+			
+			
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
-					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/groups/group/"+groupId+"/users/"+userId+"/sender/"+sendingId);
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/groups/group/"+groupId+"/users/"+userId+"/sender/"+sendingId);
 			
 			return target.request(MediaType.APPLICATION_JSON).delete();
 			/*if(Response.Status.OK.equals(response.getStatus())) {

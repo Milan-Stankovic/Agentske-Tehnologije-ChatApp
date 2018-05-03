@@ -2,21 +2,22 @@ package rest;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.faces.flow.SwitchCase;
 import javax.inject.Inject;
-import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.bson.BSON;
 import org.bson.Document;
 
 import com.google.gson.Gson;
 
+import dbClasses.FriendshipDatabase;
 import dbClasses.UserDatabase;
 import model.Friendship;
 import model.FriendshipStatus;
@@ -34,31 +35,36 @@ public class NotificationRest {
 	private UserDatabase userDatabase;
 	
 	@Inject
+	private FriendshipDatabase friendshipDatabase;
+	
+	@Inject
 	private PushNotifications wsNotifications;
 	
-	@POST
-	@Path("{username}/notifyFriendshipStart")
+	@GET
+	@Path("{username}/notifyFriendshipStart/friendship/{fid}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response notifyWantedFriend(@PathParam("userName") String userName, Friendship addedFriendship) {
-		Document foundSender = (Document) userDatabase.getCollection().find(new Document("username", addedFriendship.getSender())).first();
-		Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", addedFriendship.getSender())).first();
+	public Response notifyWantedFriend(@PathParam("username") String userName, @PathParam("fid") String fid) {
+		System.out.println(fid); 
 		
+		Document foundSender = (Document) friendshipDatabase.getCollection().find(new Document("id", fid)).first();
 		
-		if(foundReciver==null||foundSender==null) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		}else {
-			
-			updateFriendship(FriendshipStatus.PENDING, foundSender, foundReciver, userName);
-			return null;
-		}
+		Gson gson = new Gson();
+		Friendship f = gson.fromJson(foundSender.toJson(), Friendship.class);
+		 Document foundSender1 = (Document) userDatabase.getCollection().find(new Document("username", f.getSender())).first();
+	        Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", f.getReciever())).first();   
+
+		System.out.println("NOTIFAJUME");
+		updateFriendship(FriendshipStatus.PENDING, foundSender1, foundReciver, userName);
+		return Response.status(Response.Status.OK).build();
+		
 	}
 	
 	@POST
 	@Path("{username}/notifyFriendshipEnd")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response notifyFriendshipEnd(@PathParam("userName") String userName, Friendship deleted) {
+	public Response notifyFriendshipEnd(@PathParam("username") String userName, Friendship deleted) {
 		Document foundSender = (Document) userDatabase.getCollection().find(new Document("username", deleted.getSender())).first();
 		Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", deleted.getSender())).first();
 		
@@ -138,7 +144,7 @@ public class NotificationRest {
 	}
 	
 	@POST
-	@Path("{username}/notifyNewGroup")
+	@Path("{userName}/notifyNewGroup")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public Response notifyNewGroup(@PathParam("userName") String userName, Group g) {
@@ -149,7 +155,7 @@ public class NotificationRest {
 	}
 	
 	@POST
-	@Path("{username}/notifyEndGroup")
+	@Path("{userName}/notifyEndGroup")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public Response notifyEndGroup(@PathParam("userName") String userName, Group g) {
@@ -163,7 +169,7 @@ public class NotificationRest {
 	@Path("{username}/notifyNewGroupMember")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response notifyNewGroupMember(@PathParam("userName") String userName, Group g) {
+	public Response notifyNewGroupMember(@PathParam("username") String userName, Group g) {
 		groupUpdate(userName, g.getId(), NotificationType.GROUPNEWUSER);
 		return null;
 	}
@@ -172,7 +178,7 @@ public class NotificationRest {
 	@Path("{username}/notifyRemovedUser")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	public Response notifyRemovedUser(@PathParam("userName") String userName, Group g) {
+	public Response notifyRemovedUser(@PathParam("username") String userName, Group g) {
 		groupUpdate(userName, g.getId(), NotificationType.GROUPREMOVE);
 		return null;
 	}
