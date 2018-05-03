@@ -73,6 +73,29 @@ public class UserRest {
 		return !nodeInfo.getMasterIp().equals(nodeInfo.getCurrentIp());
 	}
 
+	
+	
+	@GET
+	@Path("/notifyFriend/{userName}/firend/{user2}/{tip}")
+	@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	private void notify(@PathParam("userName") String userName, @PathParam("user2") String user2, @PathParam("tip") String tip) {
+	
+		 System.out.println("Ima aktivnih koji su prijatelji!!!");
+		  NotificationDTO temp = new NotificationDTO();
+		  temp.setRecieverId(user2);
+		  temp.setUserId(userName);
+		  if(!tip.equals("LOGIN"))
+			  temp.setType(NotificationType.LOGOUT);
+		  else
+			  temp.setType(NotificationType.LOGIN);
+		  wsPushNotif.pushNotification(temp);
+		
+	}
+	
+	
+	
+	
 
 	@GET
 	@Path("/addActive/{userName}/ip/{ip}")
@@ -82,7 +105,7 @@ public class UserRest {
 		
 		String returnMessage="";
 	    
-   	 Document found = (Document) userDatabase.getCollection().find(new Document("username", userName));
+   	 Document found = (Document) userDatabase.getCollection().find(new Document("username", userName)).first();
    	 if(found != null) {
    		  Gson gson = new Gson();
    	      User person = gson.fromJson(found.toJson(), User.class);   
@@ -170,61 +193,7 @@ public class UserRest {
 	}
 	
 	
-	private void alertFriends(String userName, boolean remove) {
-		System.out.println("ALERTUJEM!!!!");
-		Gson gson = new Gson();
-		
-	    Document search1 = new Document();
-  	     search1.append("sender", userName);
-  	     search1.append("status", FriendshipStatus.ACCEPTED.toString());
-  	     
-  	     @SuppressWarnings("unchecked")
-  	     FindIterable<Document> docs = userDatabase.getCollection().find(search1);
-  	     for (Document doc : docs) {
-  	    	 System.out.println("Pronasao prijatelja!!!");
-	      Friendship friend = gson.fromJson(doc.toJson(), Friendship.class);
-	      for (User u : users.getActiveUsers()) {
-	    	  System.out.println("Ima aktivnih!!");
-	    	  if(u.getUsername().equals(friend.getReciever())) {
-	    		  System.out.println("Ima aktivnih koji su prijatelji!!!");
-	    		  NotificationDTO temp = new NotificationDTO();
-	    		  temp.setRecieverId(u.getUsername());
-	    		  temp.setUserId(userName);
-	    		  if(remove)
-	    			  temp.setType(NotificationType.LOGOUT);
-	    		  else
-	    			  temp.setType(NotificationType.LOGIN);
-	    		  wsPushNotif.pushNotification(temp);
-	    	  }
-			
-	      }
-  	    }
-  	     
-  	     
-  	     Document search2 = new Document();
-  	     search2.append("reciever", userName);
-  	     search2.append("status", FriendshipStatus.ACCEPTED.toString());
-  	     
-  	    @SuppressWarnings("unchecked")
- 	     FindIterable<Document> docs2 = userDatabase.getCollection().find(search2);
- 	     for (Document doc : docs2) {
-	      Friendship friend = gson.fromJson(doc.toJson(), Friendship.class);
-	      for (User u : users.getActiveUsers()) {
-	    	  if(u.getUsername().equals(friend.getSender())) {
-	    		  NotificationDTO temp = new NotificationDTO();
-	    		  temp.setRecieverId(u.getUsername());
-	    		  temp.setUserId(userName);
-	    		  if(remove)
-	    			  temp.setType(NotificationType.LOGOUT);
-	    		  else
-	    			  temp.setType(NotificationType.LOGIN);
-	    		  wsPushNotif.pushNotification(temp);
-	    	  }
-			
-	      }
- 	    }
-		
-	}
+	
 	
 	@GET
     @Path("/getFriends/{id}")
@@ -354,7 +323,7 @@ public class UserRest {
 	 	   	    	users.getActiveUsers().add(user);
 	 	   	      }
 	 	   	      System.out.println("U loginu iznad!!!");
-	 	   	      alertFriends(userName, false);
+	 	   	      //alertFriends(userName, false);
 	 			
 	 			
 	   	      }else
@@ -395,7 +364,7 @@ public class UserRest {
 		 						
 		 				}
 		 	   	   
-		 	   	      alertFriends(userName, true);
+		 	   	    //  alertFriends(userName, true);
 		 		
 		   	      
 		 	}else
