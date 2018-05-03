@@ -136,7 +136,7 @@ public class UserRest {
 		
 			
 			 @SuppressWarnings("unchecked")
-	  	     FindIterable<Document> docs = userDatabase.getCollection().find(query).sort(new Document("created_at",1));
+	  	     FindIterable<Document> docs = userDatabase.getCollection().find(query).sort(new Document("created_at",1));//valjda sortira
 	  	     for (Document doc : docs) {
 	  	    	 Message m = gson.fromJson(doc.toJson(), Message.class);
 	  	    	 messages.add(m);
