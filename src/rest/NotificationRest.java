@@ -40,7 +40,7 @@ public class NotificationRest {
 	@Path("{username}/notifyFriendshipStart")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyWantedFriend(@PathParam("userName") String userName, Friendship addedFriendship) {
+	public Response notifyWantedFriend(@PathParam("userName") String userName, Friendship addedFriendship) {
 		Document foundSender = (Document) userDatabase.getCollection().find(new Document("username", addedFriendship.getSender())).first();
 		Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", addedFriendship.getSender())).first();
 		
@@ -58,7 +58,7 @@ public class NotificationRest {
 	@Path("{username}/notifyFriendshipEnd")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyFriendshipEnd(@PathParam("userName") String userName, Friendship deleted) {
+	public Response notifyFriendshipEnd(@PathParam("userName") String userName, Friendship deleted) {
 		Document foundSender = (Document) userDatabase.getCollection().find(new Document("username", deleted.getSender())).first();
 		Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", deleted.getSender())).first();
 		
@@ -117,7 +117,7 @@ public class NotificationRest {
 	@Path("{username}/notifyFriendshipStateChange")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyFriendshiopChanged(@PathParam("userName") String userName, Friendship updated) {
+	public Response notifyFriendshiopChanged(@PathParam("userName") String userName, Friendship updated) {
 		Document foundSender = (Document) userDatabase.getCollection().find(new Document("username", updated.getSender())).first();
 		Document foundReciver = (Document) userDatabase.getCollection().find(new Document("username", updated.getSender())).first();
 		
@@ -141,7 +141,7 @@ public class NotificationRest {
 	@Path("{username}/notifyNewGroup")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyNewGroup(@PathParam("userName") String userName, Group g) {
+	public Response notifyNewGroup(@PathParam("userName") String userName, Group g) {
 		
 		groupUpdate(userName, g.getId(), NotificationType.GROUPADD);
 		
@@ -152,7 +152,7 @@ public class NotificationRest {
 	@Path("{username}/notifyEndGroup")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyEndGroup(@PathParam("userName") String userName, Group g) {
+	public Response notifyEndGroup(@PathParam("userName") String userName, Group g) {
 		
 		groupUpdate(userName, g.getId(), NotificationType.GROUPREMOVE);
 		
@@ -163,7 +163,7 @@ public class NotificationRest {
 	@Path("{username}/notifyNewGroupMember")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyNewGroupMember(@PathParam("userName") String userName, Group g) {
+	public Response notifyNewGroupMember(@PathParam("userName") String userName, Group g) {
 		groupUpdate(userName, g.getId(), NotificationType.GROUPNEWUSER);
 		return null;
 	}
@@ -172,7 +172,7 @@ public class NotificationRest {
 	@Path("{username}/notifyRemovedUser")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response notifyRemovedUser(@PathParam("userName") String userName, Group g) {
+	public Response notifyRemovedUser(@PathParam("userName") String userName, Group g) {
 		groupUpdate(userName, g.getId(), NotificationType.GROUPREMOVE);
 		return null;
 	}

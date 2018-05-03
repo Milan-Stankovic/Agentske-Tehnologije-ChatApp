@@ -91,7 +91,7 @@ public class UserRest {
 	@Path("/notifyFriend/{userName}/firend/{user2}/{tip}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private void notify(@PathParam("userName") String userName, @PathParam("user2") String user2, @PathParam("tip") String tip) {
+	public void notify(@PathParam("userName") String userName, @PathParam("user2") String user2, @PathParam("tip") String tip) {
 	
 		 System.out.println("RADI NOTIFY FRIEND U CHAT APPU");
 		  NotificationDTO temp = new NotificationDTO();
@@ -113,7 +113,7 @@ public class UserRest {
 	@Path("/addActive/{userName}/ip/{ip}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private void getActive(@PathParam("userName") String userName, @PathParam("ip") String ip) {
+	public void getActive(@PathParam("userName") String userName, @PathParam("ip") String ip) {
 		
 		String returnMessage="";
 	    
@@ -150,7 +150,7 @@ public class UserRest {
 	@Path("/getMessages/user/{userName}/from/{isGroup}/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private Response getMessages(@PathParam("userName") String userName, @PathParam("id") String id, @PathParam("isGroup") String isG) {
+	public Response getMessages(@PathParam("userName") String userName, @PathParam("id") String id, @PathParam("isGroup") String isG) {
 		ArrayList<Message> messages = new ArrayList<>();
 		Gson gson = new Gson();
 		if(isG.equals("Y")) {
@@ -396,7 +396,7 @@ public class UserRest {
 	@Path("/removeActive/{userName}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private void removeActive(@PathParam("userName") String userName) {
+	public void removeActive(@PathParam("userName") String userName) {
 		
 		String returnMessage="";
 	    
@@ -464,7 +464,7 @@ public class UserRest {
 	@Path("/sendMessage")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	private void getMessage(Message m) {
+	public void getMessage(Message m) {
 		try {
 			ws.forwardMessage(m);
 		} catch (IOException e) {
