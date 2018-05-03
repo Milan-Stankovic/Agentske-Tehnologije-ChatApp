@@ -59,6 +59,7 @@ public class PrimalacQueueMDB implements MessageListener {
 				n.setRecieverId(((Friendship)aclMessage.getContent()).getReciever());
 				n.setUserId(((Friendship)aclMessage.getContent()).getSender());
 				n.setType(NotificationType.PENDING);
+				System.out.println(n);
 				wsPush.pushNotification(n);
 				break;
 			case DELETE_FRIENDSHIP:
@@ -68,7 +69,6 @@ public class PrimalacQueueMDB implements MessageListener {
 				wsPush.pushNotification(n);
 				break;
 			case PUT_FRIENDSHIP:
-				System.out.println("Entered friendship editing!!!");
 				n.setRecieverId(((Friendship)aclMessage.getContent()).getReciever());
 				n.setUserId(((Friendship)aclMessage.getContent()).getSender());
 				n.setType(NotificationType.ACCEPTED);

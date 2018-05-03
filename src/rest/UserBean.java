@@ -39,8 +39,8 @@ import rest.dto.ErrorDTO;
 @Startup
 public class UserBean {
 	
-	private ArrayList<User> activeUsers;
-	private ArrayList<Host> registeredHosts;
+	private ArrayList<User> activeUsers= new ArrayList<>();
+	private ArrayList<Host> registeredHosts= new ArrayList<>();
 	private String masterIp;
 	private String currentIp;
 	

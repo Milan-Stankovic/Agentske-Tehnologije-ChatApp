@@ -15,8 +15,10 @@
         	}
         	var data ={
         			"username" : "", 
-        			"password":pass
-        			
+        			"password":pass,
+        			"hostIp" : "",
+        			"name" : "",
+        			"lastName" : ""
         	}
             $http({
               method: 'POST',

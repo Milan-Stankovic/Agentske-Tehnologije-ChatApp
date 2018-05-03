@@ -171,19 +171,22 @@ public class UserRest {
 	
 	
 	private void alertFriends(String userName, boolean remove) {
-		
+		System.out.println("ALERTUJEM!!!!");
 		Gson gson = new Gson();
 		
 	    Document search1 = new Document();
   	     search1.append("sender", userName);
-  	     search1.append("status", FriendshipStatus.ACCEPTED);
+  	     search1.append("status", FriendshipStatus.ACCEPTED.toString());
   	     
   	     @SuppressWarnings("unchecked")
   	     FindIterable<Document> docs = userDatabase.getCollection().find(search1);
   	     for (Document doc : docs) {
+  	    	 System.out.println("Pronasao prijatelja!!!");
 	      Friendship friend = gson.fromJson(doc.toJson(), Friendship.class);
 	      for (User u : users.getActiveUsers()) {
+	    	  System.out.println("Ima aktivnih!!");
 	    	  if(u.getUsername().equals(friend.getReciever())) {
+	    		  System.out.println("Ima aktivnih koji su prijatelji!!!");
 	    		  NotificationDTO temp = new NotificationDTO();
 	    		  temp.setRecieverId(u.getUsername());
 	    		  temp.setUserId(userName);
@@ -319,13 +322,16 @@ public class UserRest {
     @Path("/login/{userName}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public String login(@PathParam("userName") String userName, String password){
+    public String login(@PathParam("userName") String userName, User user112){
+		String password = user112.getPassword();
+		
+		System.out.println("U LOGINU SAM I PASS JE : " +password );
 		String returnStr="";
 	 	Document found = (Document) userDatabase.getCollection().find(new Document("username", userName)).first();
 	 	if(found != null) {
 	   		  Gson gson = new Gson();
 	   	      User user = gson.fromJson(found.toJson(), User.class);  
-	   	      if(user.getUsername().equals(password)) {
+	   	      if(user.getPassword().equals(password)) {
 	   	    	 
 	   	    	 
 		   	    	ResteasyClient client = new ResteasyClientBuilder().build();
@@ -347,6 +353,7 @@ public class UserRest {
 	 	   	    	  
 	 	   	    	users.getActiveUsers().add(user);
 	 	   	      }
+	 	   	      System.out.println("U loginu iznad!!!");
 	 	   	      alertFriends(userName, false);
 	 			
 	 			
