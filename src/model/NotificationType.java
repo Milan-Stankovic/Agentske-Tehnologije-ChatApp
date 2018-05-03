@@ -9,5 +9,6 @@ public enum NotificationType {
 	ACCEPTED, 
 	REMOVED, 
 	PENDING,
-	GROUPNEWUSER
+	GROUPNEWUSER,
+	GROUPREMOVEUSER
 }

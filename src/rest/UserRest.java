@@ -31,6 +31,9 @@ import dbClasses.FriendshipDatabase;
 import dbClasses.GroupDatabase;
 import dbClasses.MessageDatabase;
 import dbClasses.UserDatabase;
+import jms.JMSQueue;
+import jms.JMSStatus;
+import jms.jmsDTO;
 import model.Friendship;
 import model.FriendshipStatus;
 import model.Group;
@@ -56,6 +59,7 @@ public class UserRest {
 	@Inject
 	private PushNotifications wsPushNotif;
 	
+
 	@Inject 
 	private FriendshipDatabase friendDb;
 	
@@ -65,7 +69,14 @@ public class UserRest {
 	
 	@Inject
 	private GroupDatabase groupDb;
+
+	@Inject
+	private UserBean nodeInfo;
 	
+	private boolean checkIfMaster() {
+		return !nodeInfo.getMasterIp().equals(nodeInfo.getCurrentIp());
+	}
+
 
 	@GET
 	@Path("/addActive/{userName}/ip/{ip}")
@@ -307,14 +318,15 @@ public class UserRest {
 	   		  Gson gson = new Gson();
 	   	      User user = gson.fromJson(found.toJson(), User.class);  
 	   	      if(user.getUsername().equals(password)) {
-	   	    	  
-	   	    	ResteasyClient client = new ResteasyClientBuilder().build();
-	 			
-	 			ResteasyWebTarget target = client.target(
-	 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/login");
-	 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user,MediaType.APPLICATION_JSON));
-	 			returnStr = response.readEntity(String.class);
-	 			
+	   	    	 
+	   	    	 
+		   	    	ResteasyClient client = new ResteasyClientBuilder().build();
+		 			
+		 			ResteasyWebTarget target = client.target(
+		 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/login");
+		 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user,MediaType.APPLICATION_JSON));
+		 			returnStr = response.readEntity(String.class);
+	   	    	 
 	 			  boolean active= false;
 	 	   	      for (User user2 : users.getActiveUsers()) {
 	 					if(user2.getUsername().equals(user.getUsername())) {

@@ -2,23 +2,36 @@ package rest;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import model.Host;
 import model.User;
-import java.net.*;
-import java.io.*;
+import rest.dto.ErrorDTO;
 
 @LocalBean
 @Path("/hosts")
@@ -131,12 +144,13 @@ public class UserBean {
 			System.out.println("Error while loading config.txt");
 		}
 		
-		/*ResteasyClient client = new ResteasyClientBuilder().build();
+		ResteasyClient client = new ResteasyClientBuilder().build();
 		
 		ResteasyWebTarget target = client.target(
-				"http://" + masterIp + ":8096/UserApp/hosts/registerHost/");
+				"http://" + masterIp + ":8096/UserApp/rest/hosts/registerHost");
+		System.out.println("http://" + masterIp + ":8096/UserApp/rest/hosts/registerHost");
 		
-		Response response = target.request(MediaType.APPLICATION_JSON).get();
+		Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(new Host(currentIp, "Grbas komp"),MediaType.APPLICATION_JSON));
 		
 		if(Response.Status.OK.ordinal()==response.getStatus()) {
 			String listString= response.readEntity(String.class);
@@ -155,11 +169,12 @@ public class UserBean {
 			Gson gson1=new Gson();
 			Type type1 = new TypeToken<List<String>>(){}.getType();
 			activeUsers = gson1.fromJson(listString1, type1);
+			
 		}
 		else {
-			System.out.println("Host aready exsists.");
+			System.out.println(response.getStatus());
 		}
-		*/
+		
 		
 	}
 	
