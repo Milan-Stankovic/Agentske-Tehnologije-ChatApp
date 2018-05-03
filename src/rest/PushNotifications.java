@@ -101,7 +101,7 @@ public class PushNotifications {
 			 System.out.println("NASAO SAM GA U PUSHU");
 	        	if(peer.getUserProperties().get("user").toString().equals(n.getRecieverId())) {
 
-	        		peer.getAsyncRemote().sendText(n.toString());
+	        		//peer.getAsyncRemote().sendText(n.toString());
 	        		peer.getAsyncRemote().sendObject(n);
 	        		
 	        	

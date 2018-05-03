@@ -45,9 +45,11 @@
           var messageObj = data;
           console.log("Received data from websocket: ", messageObj);
           
-          var notification ={};
-          notification.tekst = messageObj;// OVDE MI ISPARSIRAJ DA NOTIFICATION TEXT LICI NA NESTO :D
-          $scope.notifications.push(messageObj);
+         
+        
+          var data = messageObj.type; // OVDE MI ISPARSIRAJ DA NOTIFICATION TEXT LICI NA NESTO :D
+          $scope.notifications.push(data);  
+          $scope.$apply($scope.notifications);
          
         }
     	
