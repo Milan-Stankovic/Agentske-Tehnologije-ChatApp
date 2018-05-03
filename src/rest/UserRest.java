@@ -337,7 +337,7 @@ public class UserRest {
  			
 	 		user.setHostIp(users.getCurrentIp());
 	 		System.out.println("MASTER IP : " + users.getMasterIp()); 
-	 		System.out.println("CURENT IP : " + users.getCurrentIp());
+	 		System.out.println("CURENT IP : " + users.getCurrentIp()); 
 	 		System.out.println("http://" + users.getMasterIp() + ":8096/UserApp/rest/register");
  			ResteasyWebTarget target = client.target(
  					"http://" + users.getMasterIp() + ":8096/UserApp/rest/users/register");
