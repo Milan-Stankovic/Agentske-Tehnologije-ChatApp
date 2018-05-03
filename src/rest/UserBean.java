@@ -109,6 +109,10 @@ public class UserBean {
 		        line = br.readLine();
 		    }
 		    masterIp = sb.toString();
+		    System.out.println(masterIp.length());
+		    masterIp = masterIp.substring(0, masterIp.length()-2);
+		    System.out.println(masterIp.length());
+		  
 		    
 		    URL whatismyip = new URL("http://checkip.amazonaws.com");
 		    BufferedReader in = new BufferedReader(new InputStreamReader(
