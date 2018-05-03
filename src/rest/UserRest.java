@@ -1,6 +1,8 @@
 package rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -22,6 +24,10 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import com.google.gson.Gson;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 
 import dbClasses.UserDatabase;
@@ -82,6 +88,65 @@ public class UserRest {
    	 }else {
    		 returnMessage="NOUSER";
    	 }
+		
+		
+	}
+	
+	
+	@GET
+	@Path("/getMessages/user/{userName}/from/{isGroup}/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	private Response getMessages(@PathParam("userName") String userName, @PathParam("id") String id, @PathParam("isGroup") String isG) {
+		ArrayList<Message> messages = new ArrayList<>();
+		Gson gson = new Gson();
+		if(isG.equals("Y")) {
+
+			FindIterable<Document> docs = userDatabase.getCollection().find(new Document("groupId", id)).sort(new Document("created_at",1));
+		    for (Document doc : docs) {
+	  	    	 Message m = gson.fromJson(doc.toJson(), Message.class);
+	  	    	 messages.add(m);
+	  	     }
+		  	
+			
+		}else {
+
+		  	Document or1 = new Document(
+		  		  "$and", Arrays.asList(
+		  		    new Document("sender", userName),
+		  		    new Document("reciver", id),
+		  		    new Document("groupId", "")
+		  		  )
+		  		);
+		  	
+		  	Document or2 = new Document(
+			  		  "$and", Arrays.asList(
+			  		    new Document("sender", id),
+			  		    new Document("reciver", userName),
+			  		    new Document("groupId", "")
+			  		  )
+			  		);
+			Document query = new Document(
+			  		  "$or", Arrays.asList(
+			  		  or1,
+			  		  or2
+			  		  )
+			  		);
+			
+		
+			
+			 @SuppressWarnings("unchecked")
+	  	     FindIterable<Document> docs = userDatabase.getCollection().find(query).sort(new Document("created_at",1));
+	  	     for (Document doc : docs) {
+	  	    	 Message m = gson.fromJson(doc.toJson(), Message.class);
+	  	    	 messages.add(m);
+	  	     }
+		 	
+			
+		}
+		
+		
+		return Response.status(Response.Status.OK).entity(messages).build();
 		
 		
 	}
