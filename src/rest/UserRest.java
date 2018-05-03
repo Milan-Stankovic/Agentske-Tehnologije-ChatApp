@@ -24,10 +24,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import com.google.gson.Gson;
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 
 import dbClasses.UserDatabase;
@@ -222,7 +218,7 @@ public class UserRest {
 	 			
 	 			ResteasyWebTarget target = client.target(
 	 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/login");
-	 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user, "application/vnd.com.demo.user-management.user+xml;charset=UTF-8;version=1"));
+	 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user,MediaType.APPLICATION_JSON));
 	 			returnStr = response.readEntity(String.class);
 	 			
 	 			  boolean active= false;
@@ -267,7 +263,7 @@ public class UserRest {
 		 			
 		 			ResteasyWebTarget target = client.target(
 		 					"http://" + users.getMasterIp() + ":8096/UserApp/rest/logout");
-		 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user, "application/vnd.com.demo.user-management.user+xml;charset=UTF-8;version=1"));
+		 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user, MediaType.APPLICATION_JSON));
 		 			returnStr = response.readEntity(String.class);
 		 		
 		 	   	      for (User user2 : users.getActiveUsers()) {
@@ -339,10 +335,15 @@ public class UserRest {
 	 		if(allOk) {
 	 		ResteasyClient client = new ResteasyClientBuilder().build();
  			
+	 		user.setHostIp(users.getCurrentIp());
+	 		System.out.println("MASTER IP : " + users.getMasterIp()); 
+	 		System.out.println("CURENT IP : " + users.getCurrentIp());
  			ResteasyWebTarget target = client.target(
  					"http://" + users.getMasterIp() + ":8096/UserApp/rest/register");
- 			Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(user, "application/vnd.com.demo.user-management.user+xml;charset=UTF-8;version=1"));
+ 			System.out.println("DOSAO SAM TU");
+ 			Response response = target.request(MediaType.TEXT_PLAIN).post(Entity.entity(user, MediaType.APPLICATION_JSON));
  			returnStr = response.readEntity(String.class);
+ 			response.close();
 	 		}else
 	 			returnStr="BAD INPUT";
 	 		return returnStr;
