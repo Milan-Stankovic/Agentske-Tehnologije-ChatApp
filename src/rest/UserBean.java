@@ -117,8 +117,12 @@ public class UserBean {
 		    String ip = in.readLine();
 		    
 		    currentIp = getLocalHostLANAddress().toString();
+		    String[] split = currentIp.split("/");
+		    currentIp=split[1];
+		    String[] split2 = currentIp.split("/n");
+		    currentIp=split2[0];
 		    
-		    System.out.println("I am registring myself.\n Master IP is: "+masterIp+"My IP(global) is: "+ip+"\nMy IP(local) is: " + getLocalHostLANAddress().toString());
+		    System.out.println("I am registring myself.\n Master IP is: "+masterIp+"My IP(global) is: "+ip+"\nMy IP(local) is: " + currentIp);
 		} catch (Exception e) {
 			System.out.println("Error while loading config.txt");
 		}
