@@ -2,11 +2,11 @@
     'use strict';
 
     angular
-		.module('app',['ngCookies'])
+		.module('app',[])
 		.controller('loginController', loginController);
 
-    loginController.$inject = ['$scope', '$rootScope','$http', '$cookies', '$window'];
-    function loginController($scope, $rootScope,$http, $cookies, $window) {
+    loginController.$inject = ['$scope', '$rootScope','$http', '$window'];
+    function loginController($scope, $rootScope,$http, $window) {
   
     	$scope.login = function(username, pass){
         	if(username===undefined || pass===undefined || username==="" || pass===""){
