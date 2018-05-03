@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-		.module('app',[])
+		.module('app',['ngCookies'])
 		.controller('loginController', loginController);
 
     loginController.$inject = ['$scope', '$rootScope','$http', '$cookies', '$window'];
@@ -16,17 +16,16 @@
         	var data =pass;
             $http({
               method: 'POST',
-              url: 'http://localhost:8096/ChatApp/rest/login/'+username,
+              url: 'http://localhost:8096/ChatApp/rest/users/login/'+username,
               data: data
             }).then(function successCallback(response) {
                 var user = response.data;
 
                 		
-	     			$cookies.put("user", user.username, {
-	     			   path: 'core' //E ovo nemam pojma sta je
-	     			});
-	     			console.log("Uspesno logovanje: " + $cookies.get('user'))
-	            	$window.location.href = 'http://localhost:8096/';
+                	$window.localStorage.setItem("user",username);
+	     			console.log("Uspesno logovanje: " + $window.localStorage.getItem("user"))
+	     			console.log(user);
+	            	$window.location.href = 'http://localhost:8096/ChatApp/allChats.html';
                 
                 
                 }, function errorCallback(response) {
@@ -48,7 +47,7 @@
                 var user = response.data;
 
                 
-                $cookies.remove("user");
+                $window.localStorage.removeItem("user",username);
                 
                
 	            	$window.location.href = 'http://localhost:8096/';

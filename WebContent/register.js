@@ -2,11 +2,11 @@
     'use strict';
 
     angular
-		.module('app',['ngCookies'])
+    	.module('app',[])
 		.controller('registerController', registerController);
 
-    registerController.$inject = ['$scope', '$rootScope','$http', '$cookies', '$window'];
-    function registerController($scope, $rootScope,$http, $cookies, $window) {
+    registerController.$inject = ['$scope', '$rootScope','$http', '$window'];
+    function registerController($scope, $rootScope,$http, $window) {
   
     	
     	$scope.register = function(username, pass, firstName, lastName){

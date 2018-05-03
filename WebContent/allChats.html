@@ -6,7 +6,6 @@
 
 <script src="angular.js"></script>
 <script src="angular-cookies.js"></script>
-<script src="app.module.js"></script>
 <script src="allChats.js"></script>
 </head>
 <body ng-app="app">
@@ -16,19 +15,32 @@
 	<h1>Moguci chatovi :</h1>
 
 	<h2>Svi prijatelji :</h2>
- 	<span ng-repeat=" prijatelj in sviPrijatelji">
+ 	<span ng-repeat=" prijatelj in sviPrijatelji track by $index">
 		<div>
-			<h4> <a ng-click="otvoriChat(prijatelj.username)">{{prijatelj.username}}</a></h4>  
+			<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChat(prijatelj.username)">{{prijatelj.username}}</a></h4>  
        </div>
     </span>
     
     <h2>Sve grupe :</h2>
  	<span ng-repeat=" grupa in sveGrupe">
 		<div>
-			<h4> <a ng-click="otvoriChatGrupa(grupa.id)">{{grupa.name}}</a></h4>
+			<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChatGrupa(grupa.id)">{{grupa.name}}</a></h4>
   
              </div>
     </span>
+    
+    <div>
+    
+    <br/>
+    <br/>
+    
+    <h4>Notifikacije : </h4>
+    <div ng-repeat="notification in notifications">
+     		<p> notification.tekst </p>
+     
+     </div>
+    
+    </div>
 
 
 

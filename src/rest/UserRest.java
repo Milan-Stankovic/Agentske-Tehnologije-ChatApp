@@ -321,7 +321,7 @@ public class UserRest {
     @Produces(MediaType.TEXT_PLAIN)
     public String login(@PathParam("userName") String userName, String password){
 		String returnStr="";
-	 	Document found = (Document) userDatabase.getCollection().find(new Document("username", userName));
+	 	Document found = (Document) userDatabase.getCollection().find(new Document("username", userName)).first();
 	 	if(found != null) {
 	   		  Gson gson = new Gson();
 	   	      User user = gson.fromJson(found.toJson(), User.class);  
