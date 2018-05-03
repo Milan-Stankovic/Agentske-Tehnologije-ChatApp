@@ -152,7 +152,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			new JMSQueue(new jmsDTO("", JMSStatus.GET_GROUP, toCreate));
+			new JMSQueue(new jmsDTO("", JMSStatus.NEW_GROUP, toCreate));
 			return null;
 		}
 	}
@@ -185,6 +185,7 @@ public class ProxyRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addUser(@PathParam("groupId") String groupId,User toAdd) {
+		System.out.println("USO U REST!!!");
 		if(checkIfMaster()) {		
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(

@@ -14,10 +14,14 @@ import javax.jms.ObjectMessage;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.Document;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import com.google.gson.Gson;
+
+import dbClasses.GroupDatabase;
 import model.Friendship;
 import model.Group;
 import model.NotificationDTO;
@@ -35,6 +39,9 @@ public class PrimalacQueueMDB implements MessageListener {
 	@Inject
 	PushNotifications wsPush;
 	
+	@Inject
+	private GroupDatabase groupDatabase;
+	
 	Logger log = Logger.getLogger("Primalac MDB");
 
 
@@ -43,7 +50,6 @@ public class PrimalacQueueMDB implements MessageListener {
 		ObjectMessage omsg = (ObjectMessage) msg;
 		try {
 			jmsDTO aclMessage = (jmsDTO) omsg.getObject();
-			log.info("Evo ide zahtev za prijateljstvo na: "+((Friendship)aclMessage.getContent()).getReciever());
 			
 			
 			NotificationDTO n = new NotificationDTO();
@@ -62,6 +68,7 @@ public class PrimalacQueueMDB implements MessageListener {
 				wsPush.pushNotification(n);
 				break;
 			case PUT_FRIENDSHIP:
+				System.out.println("Entered friendship editing!!!");
 				n.setRecieverId(((Friendship)aclMessage.getContent()).getReciever());
 				n.setUserId(((Friendship)aclMessage.getContent()).getSender());
 				n.setType(NotificationType.ACCEPTED);
@@ -72,10 +79,12 @@ public class PrimalacQueueMDB implements MessageListener {
 				
 				break;
 			case NEW_GROUP:
+				System.out.println("USO U NEW GROUP!!!");
 				for(User u: ((Group)aclMessage.getContent()).getUsers()) {
 					n.setRecieverId(u.getUsername());
 					n.setGroupId(((Group)aclMessage.getContent()).getId());
 					n.setType(NotificationType.GROUPADD);
+					System.out.println("Saljem notifikaciju svima: ovo je group ID"+((Group)aclMessage.getContent()).getId());
 					wsPush.pushNotification(n);
 				}
 				
@@ -89,18 +98,32 @@ public class PrimalacQueueMDB implements MessageListener {
 				}
 				break;
 			case ADD_USER:
-				for(User u: ((Group)aclMessage.getContent()).getUsers()) {
+				Document searchBy = new Document();
+		        searchBy.put("id", aclMessage.getInfo());
+
+		        Document found = (Document) groupDatabase.getCollection().find(searchBy).first();
+				System.out.println("Da vidimo dal je null: "+found==null+"Group: "+found);
+				Gson gson = new Gson();
+		   	     Group group = gson.fromJson(found.toJson(), Group.class);   
+				for(User u: group.getUsers()) {
 					n.setRecieverId(u.getUsername());
-					n.setGroupId(((Group)aclMessage.getContent()).getId());
+					n.setGroupId(group.getId());
 					n.setUserId(aclMessage.getInfo());
 					n.setType(NotificationType.GROUPNEWUSER);
 					wsPush.pushNotification(n);
 				}
 				break;
 			case REMOVE_USER_GROUP:
-				for(User u: ((Group)aclMessage.getContent()).getUsers()) {
+				Document searchBy1 = new Document();
+		        searchBy1.put("id", aclMessage.getInfo());
+
+		        Document found1 = (Document) groupDatabase.getCollection().find(searchBy1).first();
+				
+				Gson gson1 = new Gson();
+		   	     Group group1 = gson1.fromJson(((Document)aclMessage.getContent()).toJson(), Group.class);   
+				for(User u: group1.getUsers()) {
 					n.setRecieverId(u.getUsername());
-					n.setGroupId(((Group)aclMessage.getContent()).getId());
+					n.setGroupId(group1.getId());
 					n.setUserId(aclMessage.getInfo());
 					n.setType(NotificationType.GROUPREMOVEUSER);
 					wsPush.pushNotification(n);
@@ -112,7 +135,7 @@ public class PrimalacQueueMDB implements MessageListener {
 			}
 			
 		}catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 
