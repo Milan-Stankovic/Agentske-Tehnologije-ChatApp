@@ -7,5 +7,6 @@ public enum JMSStatus {
 	GET_GROUP,
 	NEW_GROUP,
 	DELETE_GROUP,
+	ADD_USER,
 	REMOVE_USER_GROUP   
 }

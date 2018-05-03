@@ -198,7 +198,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			new JMSQueue(new jmsDTO(groupId, JMSStatus.DELETE_GROUP, toAdd));
+			new JMSQueue(new jmsDTO(groupId, JMSStatus.ADD_USER, toAdd));
 			return null;
 		}
 	}
