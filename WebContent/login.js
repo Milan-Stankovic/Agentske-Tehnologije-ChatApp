@@ -13,7 +13,11 @@
         		$scope.message="Enter both username and password.";
         		return;
         	}
-        	var data =pass;
+        	var data ={
+        			"username" : "", 
+        			"password":pass
+        			
+        	}
             $http({
               method: 'POST',
               url: 'http://localhost:8096/ChatApp/rest/users/login/'+username,
