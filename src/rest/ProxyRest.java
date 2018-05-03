@@ -19,6 +19,9 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import jms.JMSQueue;
+import jms.JMSStatus;
+import jms.jmsDTO;
 import model.Friendship;
 import model.Group;
 import model.User;
@@ -53,7 +56,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO("", JMSStatus.NEW_FRIENDSHIP, newFriendship));
 			return null;
 		}
 
@@ -78,7 +81,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO("", JMSStatus.DELETE_FRIENDSHIP, toDelete));
 			return null;
 		}
 
@@ -103,7 +106,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO("", JMSStatus.PUT_FRIENDSHIP, toDelete));
 			return null;
 		}
     }
@@ -126,7 +129,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO("", JMSStatus.GET_GROUP, groupId));
 			return null;
 		}
     }
@@ -149,7 +152,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO("", JMSStatus.GET_GROUP, toCreate));
 			return null;
 		}
 	}
@@ -172,7 +175,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO("", JMSStatus.DELETE_GROUP, toDelete));
 			return null;
 		}
 	}
@@ -195,7 +198,7 @@ public class ProxyRest {
 			}*/
 		}
 		else {
-			//JMS
+			new JMSQueue(new jmsDTO(groupId, JMSStatus.DELETE_GROUP, toAdd));
 			return null;
 		}
 	}

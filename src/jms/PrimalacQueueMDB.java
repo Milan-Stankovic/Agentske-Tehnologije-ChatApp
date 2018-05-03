@@ -20,7 +20,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 @MessageDriven(activationConfig = {
 		@ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-		@ActivationConfigProperty(propertyName = "destination", propertyValue = "java:jboss/exported/jms/queue/mojQueue") })
+		@ActivationConfigProperty(propertyName = "destination", propertyValue = "java:jboss/exported/jms/queue/mojQueue1") })
 
 public class PrimalacQueueMDB implements MessageListener {
 
@@ -28,7 +28,7 @@ public class PrimalacQueueMDB implements MessageListener {
 
 
 	public void onMessage(Message msg) {
-		log.info("MOTHAFUCKING HELLL");
+		log.info("ChatApp");
 	}
 
 	
