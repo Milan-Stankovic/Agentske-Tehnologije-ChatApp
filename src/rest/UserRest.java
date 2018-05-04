@@ -187,7 +187,7 @@ public class UserRest {
 		  	Document or1 = new Document(
 		  		  "$and", Arrays.asList(
 		  		    new Document("sender", userName),
-		  		    new Document("reciver", id),
+		  		    new Document("reciver", id), 
 		  		    new Document("groupId", "")
 		  		  )
 		  		);
