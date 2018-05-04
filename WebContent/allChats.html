@@ -4,13 +4,12 @@
 <meta charset="ISO-8859-1">
 <title>All chats</title>
 
-
-</head>
-<body ng-app="app">
 <script src="angular.js"></script>
 <script src="angular-cookies.js"></script>
 <script src="allChats.js"></script>
-<script src="services.js"></script>
+</head>
+<body ng-app="app">
+
 <div ng-controller="allChatsController" >
 
 	<div ng-show="showAllChats" >
@@ -44,7 +43,7 @@
      	
      	<textarea  ng-model="newMessage" rows="3" cols="40" id="newMessage"> </textarea>
 		</br>
-		<button  ng-click="sendMessage(chat.id, newMessage, isGrupa)"> Posalji </button>
+		<button  ng-click="sendMessage(chat.id, newMessage, isGrupa"> Posalji </button>
 		
     
     </div>
