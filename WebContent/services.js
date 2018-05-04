@@ -16,6 +16,21 @@ angular.module('app')
                 data: dto
             };
             $http(req).then(onSuccess, onError);
-        }	
+        }	,
+        
+        getAccepted:function (userId, onSuccess, onError) {
+            var req = {
+                    method: 'GET',
+                    url: 'http://localhost:8096/ChatApp/rest/front/friendsOfUser/'+userId
+                };
+                $http(req).then(onSuccess, onError);
+            },
+            getPccepted:function (userId, onSuccess, onError) {
+                var req = {
+                        method: 'GET',
+                        url: 'http://localhost:8096/ChatApp/rest/front/friendsOfUserPending/'+userId
+                    };
+                    $http(req).then(onSuccess, onError);
+                },
     }
 });
