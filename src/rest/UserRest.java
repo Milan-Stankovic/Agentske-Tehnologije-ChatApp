@@ -37,6 +37,7 @@ import model.Message;
 import model.NotificationDTO;
 import model.NotificationType;
 import model.User;
+import rest.dto.ErrorDTO;
 
 @LocalBean
 @Path("/users")
@@ -83,6 +84,22 @@ public class UserRest {
 
         return "TEST!";
     }
+	
+	@GET
+	@Path("/group/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	public Response notify(@PathParam("id") String grid) {
+		Document searchBy = new Document("id", grid);
+		Document found = (Document)groupDb.getCollection().find(searchBy).first();
+		
+		Gson gson = new Gson();
+ 	    Group person = gson.fromJson(found.toJson(), Group.class);
+		if(found!=null) return Response.status(Response.Status.OK).entity(person).build();
+		
+		return Response.status(Response.Status.NOT_FOUND).entity(new ErrorDTO("No such group.")).build();
+	
+	}
       
 	
 	

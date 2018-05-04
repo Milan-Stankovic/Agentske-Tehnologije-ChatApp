@@ -6,7 +6,7 @@
 		.controller('allChatsController', allChatsController);
 
     allChatsController.$inject = ['$scope', '$rootScope','$http',  '$window'];
-    function allChatsController($scope, $rootScope,$http, $window) {
+    function allChatsController($scope, $rootScope,$http, $window, service) {
   
     	$scope.sviPrijatelji =[];
     	$scope.sveGrupe = [];
@@ -44,14 +44,76 @@
         function listener(data) {
           var messageObj = data;
           console.log("Received data from websocket: ", messageObj);
-          
-         
-        
-          var data = messageObj.type; // OVDE MI ISPARSIRAJ DA NOTIFICATION TEXT LICI NA NESTO :D
+          var date = "";
+          if(messageObj.type=="GROUPADD"){
+        	  data+="Group ";
+        	  service.getGroup(messageObj.groupId,
+        			  function(info){
+        		  	  		data+=info.data.name;
+        		  	  		data+=" has been created.\n You have been added to that group."
+        	  		  },
+        	  		  function(){
+        	  			  alert("Error loading group name");
+        	  		  }
+        	  );
+          }
+          else if(messageObj.type=="GROUPREMOVE"){
+        	  data+="Group ";
+        	  service.getGroup(messageObj.groupId,
+        			  function(info){
+        		  	  		data+=info.data.name;
+        		  	  		data+=" has been removed.\n You have been removed from that group."
+        	  		  },
+        	  		  function(){
+        	  			  alert("Error loading group name");
+        	  		  }
+        	  );
+          }
+          else if(messageObj.type=="LOGIN"){
+        	  date+="Your friend "+messageObj.userId + " has just logged in!";
+          }
+          else if(messageObj.type=="LOGOUT"){
+        	  date+="Your friend "+messageObj.userId + " has just logged out!";
+          }
+          else if(messageObj.type=="ACCEPTED"){
+        	  date+="Your friend "+messageObj.userId + " has just accepted your friendship request!";
+          }
+          else if(messageObj.type=="REMOVED"){
+        	  date+="Your friend "+messageObj.userId + " has just removed you from friends!";
+          }
+          else if(messageObj.type=="PENDING"){
+        	  date+=""+messageObj.userId + " has just sent you a friendship request!";
+          }
+          else if(messageObj.type=="GROUPNEWUSER"){
+        	  data+="User " +messageObj.userId+ " has been added to group ";
+        	  service.getGroup(messageObj.groupId,
+        			  function(info){
+        		  	  		data+=info.data.name;
+        	  		  },
+        	  		  function(){
+        	  			  alert("Error loading group name");
+        	  		  }
+        	  );
+          }
+          else if(messageObj.type=="GROUPREMOVEUSER"){
+        	  data+="User " +messageObj.userId+ " from group ";
+        	  service.getGroup(messageObj.groupId,
+        			  function(info){
+        		  	  		data+=info.data.name;
+        		  	  		data+=" has been removed."
+        	  		  },
+        	  		  function(){
+        	  			  alert("Error loading group name");
+        	  		  }
+        	  );
+          }
+          data =date; 
           $scope.notifications.push(data);  
           $scope.$apply($scope.notifications);
          
         }
+        
+        
     	
     	
     	
