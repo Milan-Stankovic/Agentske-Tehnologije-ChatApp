@@ -23,6 +23,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.mongodb.client.FindIterable;
 
@@ -67,6 +69,7 @@ public class UserRest {
 	@Inject
 	private GroupDatabase groupDb;
 
+	
 	@Inject
 	private UserBean nodeInfo;
 	
@@ -475,6 +478,68 @@ public class UserRest {
 	 	}
 	
 
+	 	@POST
+		@Path("/forwardMessage")
+		@Consumes(MediaType.APPLICATION_JSON)
+	    @Produces(MediaType.APPLICATION_JSON)
+		public void forward(Message m) {
+	 			Document found = (Document) userDatabase.getCollection().find(new Document("username", m.getReciver())).first();
+	 			if(found!=null) {
+	 				Gson gson = new Gson();
+		 		   	User user = gson.fromJson(found.toJson(), User.class);  
+		 		   	if(user.getHostIp().equals(users.getCurrentIp())) {
+						try {
+							ws.forwardMessage(m);
+						} catch (IOException e) {
+
+							e.printStackTrace();
+						}
+		 		   	}else {
+		 		   		ResteasyClient client = new ResteasyClientBuilder().build();
+		 		   		ResteasyWebTarget target = client.target(
+			 					"http://" + user.getHostIp() + ":8096/ChatApp/rest/users/sendMessage");
+		 		   		Response response = target.request(MediaType.TEXT_PLAIN).post(Entity.entity(m, MediaType.APPLICATION_JSON));
+		 		   		
+		 		   	}
+		 					
+	 			}
+
+		}
+	 	
+	 	
+		@POST
+		@Path("/forwardGroupMessage")
+		@Consumes(MediaType.APPLICATION_JSON)
+	    @Produces(MediaType.APPLICATION_JSON)
+		public void forwardGroup(Message m) {
+			Document found = (Document) groupDb.getCollection().find(new Document("id", m.getGroupId())).first();
+			if(found!=null) {
+				
+				 ObjectMapper mapper = new ObjectMapper();
+		         String json="";
+				try {
+					json = mapper.writeValueAsString(m);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		         messageDb.getCollection().insertOne(Document.parse(json));
+				
+				
+ 				Gson gson = new Gson();
+	 		   	Group g = gson.fromJson(found.toJson(), Group.class);
+	 		   	for (User u : g.getUsers()) {
+	 		   		if(!u.getUsername().equals(m.getSender())) {
+	 		   			m.setReciver(u.getUsername());
+	 		   			forward(m);
+	 		   		}
+	 		   			
+				}
+	 		   	
+			}
+			
+		}
+	
 	
 	
 	@POST
@@ -483,7 +548,14 @@ public class UserRest {
     @Produces(MediaType.APPLICATION_JSON)
 	public void getMessage(Message m) {
 		try {
-			ws.forwardMessage(m);
+			if(m.getGroupId().equals(""))
+				ws.forwardMessage(m);
+			else {
+				 ObjectMapper mapper = new ObjectMapper();
+		         String json = mapper.writeValueAsString(m);
+		         messageDb.getCollection().insertOne(Document.parse(json));
+		         ws.forwardMessage(m);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
