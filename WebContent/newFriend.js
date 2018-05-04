@@ -7,7 +7,14 @@
 
     newFriendCtrl.$inject = ['$scope', '$rootScope','$http',  '$window', 'service'];
     function newFriendCtrl($scope, $rootScope,$http, $window, service) {
-    	
+    	service.getAccepted($window.localStorage.getItem("user"),
+    			function(info){
+    				$scope.acc=info.data;
+    			},
+    			function(){
+    				
+    			}
+    	)
     	$scope.addNew = function(){
     		service.newFriend(getDTO($scope.newUserName),
     				function(info){
@@ -29,6 +36,14 @@
 
     	    	"status":"PENDING"
     	    }
+    	}
+    	
+    	$scope.getFriendName = function(acc){
+    		if(acc.sender==$window.localStorage.getItem("user")){
+    			return acc.reciever;
+    		}else{
+    			return acc.sender;
+    		}
     	}
     }
 

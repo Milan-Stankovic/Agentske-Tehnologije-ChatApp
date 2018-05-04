@@ -65,6 +65,7 @@ public class FrontEndRests {
 			 @SuppressWarnings("unchecked")
 	  	     FindIterable<Document> docs = friendDb.getCollection().find(query);
 	     for (Document doc : docs) {
+	    	 System.out.println("NASO SAM DOIOADDASMODS");
 	    	 Friendship friend = gson.fromJson(doc.toJson(), Friendship.class);
 	    	 if(friend.getStatus()==FriendshipStatus.ACCEPTED) {
 	    		 retval.add(friend);
