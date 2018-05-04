@@ -17,6 +17,14 @@ angular.module('app')
             };
             $http(req).then(onSuccess, onError);
         }	,
+        accFriend: function (dto, onSuccess, onError) {
+            var req = {
+                method: 'PUT',
+                url: 'http://localhost:8096/ChatApp/rest/proxy/putFriendship',
+                data: dto
+            };
+            $http(req).then(onSuccess, onError);
+        }	,
         
         getAccepted:function (userId, onSuccess, onError) {
             var req = {

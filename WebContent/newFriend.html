@@ -24,6 +24,11 @@ Enter username for new freiend:<br/>
 {{getFriendName(acc)}}
 </div>
 
+<h3>Zahtevi za prijatelja:</h3>
+<div ng-repeat="acc in acc1">
+{{getFriendName(acc)}}<button ng-click="accept(acc)">Accept</button>
+</div>
+
 </div>
 	
 </body>

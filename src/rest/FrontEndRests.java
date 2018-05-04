@@ -65,7 +65,7 @@ public class FrontEndRests {
 			 @SuppressWarnings("unchecked")
 	  	     FindIterable<Document> docs = friendDb.getCollection().find(query);
 	     for (Document doc : docs) {
-	    	 System.out.println("NASO SAM DOIOADDASMODS");
+	    	 
 	    	 Friendship friend = gson.fromJson(doc.toJson(), Friendship.class);
 	    	 if(friend.getStatus()==FriendshipStatus.ACCEPTED) {
 	    		 retval.add(friend);
@@ -84,7 +84,7 @@ public class FrontEndRests {
 		Document or1 = new Document(
 		  		  "$and", Arrays.asList(
 		  		    new Document("sender", grid),
-		  		    new Document("status", FriendshipStatus.ACCEPTED.toString())
+		  		    new Document("status", FriendshipStatus.PENDING.toString())
 		  		  )
 		  		);
 		  	
@@ -92,7 +92,7 @@ public class FrontEndRests {
 			Document or2 = new Document(
 			  		  "$and", Arrays.asList(
 			  		    new Document("reciever", grid),
-			  		    new Document("status", FriendshipStatus.ACCEPTED.toString())
+			  		    new Document("status", FriendshipStatus.PENDING.toString())
 			  		  )
 			  		);
 			
@@ -109,8 +109,11 @@ public class FrontEndRests {
 			 @SuppressWarnings("unchecked")
 	  	     FindIterable<Document> docs = friendDb.getCollection().find(query);
 	     for (Document doc : docs) {
+	    	 
 	    	 Friendship friend = gson.fromJson(doc.toJson(), Friendship.class);
+	    	 //System.out.println("NASO SAM DOIOADDASMODS"+friend.getStatus());
 	    	 if(friend.getStatus()==FriendshipStatus.PENDING) {
+	    		 //System.out.println("IIIIIIIIIII");
 	    		 retval.add(friend);
 	    	 }
 	     }
