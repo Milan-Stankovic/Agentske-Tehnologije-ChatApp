@@ -117,7 +117,7 @@ public class ProxyRest {
 		if(checkIfMaster(ip)) {	
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget target = client.target(
-					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/friendship");
+					"http://" + nodeInfo.getMasterIp() + ":8096/UserApp/rest/friendship");
 			
 			return target.request(MediaType.APPLICATION_JSON).put(Entity.entity(toDelete, MediaType.APPLICATION_JSON));
 			/*if(Response.Status.OK.equals(response.getStatus())) {

@@ -19,7 +19,15 @@ Enter username for new freiend:<br/>
 <input type="text" name="userName" ng-model="newUserName"></td><br/>
 <button ng-click="addNew()">Add friend</button>
 	
-	
+<h3>Prijatelji:</h3>
+<div ng-repeat="acc in acc">
+{{getFriendName(acc)}}
+</div>
+
+<h3>Zahtevi za prijatelja:</h3>
+<div ng-repeat="acc in acc1">
+{{getFriendName(acc)}}<button ng-click="accept(acc)">Accept</button>
+</div>
 
 </div>
 	
