@@ -15,7 +15,7 @@ public class Message implements Serializable{
     private String id;
     private String sender;
     private String reciver;
-    private Date creationDate;
+  //  private Date creationDate;
     private String content;
     private String groupId="";
     
@@ -42,7 +42,7 @@ public class Message implements Serializable{
     	this.id= UUID.randomUUID().toString();
     	this.sender=m.sender;
     	this.reciver=m.reciver;
-    	this.creationDate= new Date();
+    	//this.creationDate= new Date();
     	this.content=m.content;
     	this.groupId=m.groupId;
     }
@@ -51,7 +51,7 @@ public class Message implements Serializable{
         this.id = id;
         this.sender = sender;
         this.reciver = reciver;
-        this.creationDate = creationDate;
+      //  this.creationDate = creationDate;
         this.content = content;
     }
 
@@ -79,14 +79,14 @@ public class Message implements Serializable{
         this.reciver = reciver;
     }
 
-    public Date getCreationDate() {
+ /*   public Date getCreationDate() {
         return creationDate;
     }
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
-
+*/
     public String getContent() {
         return content;
     }

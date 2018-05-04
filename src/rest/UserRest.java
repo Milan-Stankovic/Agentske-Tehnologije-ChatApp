@@ -547,8 +547,15 @@ public class UserRest {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public void getMessage(Message m) {
-
-		    try {
+	
+		System.out.println("EVO GA CAK U SEND MESSAGE");
+		
+		for (User u : users.getActiveUsers()) {
+			if(u.getUsername().equals(m.getReciver()))
+				return;
+			
+		}
+		    try {  	
 				ws.forwardMessage(m);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

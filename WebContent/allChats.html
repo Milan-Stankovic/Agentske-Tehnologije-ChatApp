@@ -26,13 +26,13 @@
 	    <h2>Sve grupe :</h2>
 	 	<span ng-repeat=" grupa in sveGrupe">
 			<div>
-				<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChatGrupa(grupa.id)">{{grupa.name}}</a></h4>
+				<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChatGrupa(grupa.id, grupa.name)">{{grupa.name}}</a></h4>
 	  		</div>
 	    </span>
 	</div>
     
     <div ng-hide="showAllChats">
-		<div ng-show="isGrupa"> <h2> Grupa : {{chat.id}} </h2> </div>
+		<div ng-show="isGrupa"> <h2> Grupa : {{chat.name}} </h2> </div>
 		<div ng-hide="isGrupa"> <h2> Prijatelj : {{chat.id}} </h2> </div>
 		</br>
 		</br>

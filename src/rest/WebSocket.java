@@ -21,12 +21,16 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import dbClasses.FriendshipDatabase;
 import dbClasses.GroupDatabase;
+import dbClasses.MessageDatabase;
 import dbClasses.UserDatabase;
 import encoderDecoder.MessageDecoder;
+import encoderDecoder.MessageEncoder;
+import encoderDecoder.NotificationDTOEncoder;
 import model.FriendshipStatus;
 import model.Group;
 import model.Message;
@@ -37,7 +41,8 @@ import model.User;
 @ServerEndpoint(
 		
 	    value = "/chat/{user}/",
-        decoders = {MessageDecoder.class}
+        decoders = {MessageDecoder.class},
+	    encoders = {MessageEncoder.class}
 		
 		)
 public class WebSocket {
@@ -51,6 +56,9 @@ public class WebSocket {
 	@Inject
 	private FriendshipDatabase friendDatabase;
 	
+	@Inject 
+	private MessageDatabase messageDb;
+	
 	private Session s;
 	
 	@OnMessage
@@ -58,8 +66,10 @@ public class WebSocket {
 	 System.out.println("message: " + m.getContent());
 	 
 	 if(m.getGroupId().equals("")) {
+		 System.out.println("SALJE PRIVATNU");
 		 sendPrivate(client, m);
 	 	}else {
+	 		 System.out.println("SALJE GRUPNU");
 	 		sendGroup(client, m);
 	 	}
 	 }
@@ -79,17 +89,34 @@ public class WebSocket {
 	private void sendPrivate(Session client, Message m) throws IOException {
 		 boolean poslao = false;
 		 
+		 System.out.println("UPAO U PRIVATNE");
 		 if(m.getGroupId().equals("")) {
 			if(!isFriend(m))
 				return;
 		 }
 		 
+		 
+		  ObjectMapper mapper = new ObjectMapper();
+         
+              String json = mapper.writeValueAsString(m);
+
+              messageDb.getCollection().insertOne(Document.parse(json));
+		 
+		 
 		 for (Session peer : client.getOpenSessions()) {
 		        	if(peer.getUserProperties().get("user").toString().equals(m.getReciver())) {
-		        		peer.getBasicRemote().sendText(m.getContent());
+		        		try {
+		        			 System.out.println("SALJE PREKO REMOTE-A");
+		        			
+							peer.getBasicRemote().sendObject(m);
+						} catch (EncodeException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 		        		poslao = true;
 		        	}
 		        if(!poslao) {
+		        	System.out.println("SALJE PREKO RESTEASY");
 		        	
 		        	 Document found = (Document) userDatabase.getCollection().find(new Document("username", m.getReciver())).first();
 		        	 if(found != null) {
@@ -97,8 +124,9 @@ public class WebSocket {
 		        		  User person = gson.fromJson(found.toJson(), User.class);   
 		        		  ResteasyClient rClient = new ResteasyClientBuilder().build();
 		  				
+		        		  System.out.println( "SALJE SE NA "+	"http://" + person.getHostIp() + ":8096/ChatApp/users/sendMessage/");
 		        		  ResteasyWebTarget target = rClient.target(
-	      						"http://" + person.getHostIp() + ":8096/ChatApp/users/sendMessage/");
+	      						"http://" + person.getHostIp() + ":8096/ChatApp/users/sendMessage");
 		  				
 		        		  Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(m, MediaType.APPLICATION_JSON));
 		        	 }
@@ -115,6 +143,8 @@ public class WebSocket {
 			Gson gson = new Gson();
    	      	Group group = gson.fromJson(found.toJson(), Group.class);   
    	      	for (User u : group.getUsers()) {
+   	      		System.out.println("SALJE OVOJ OSOBI : "+ u.getUsername());
+   	      		
    	      		m.setReciver(u.getUsername());
 				sendPrivate(client, m);
 			}
@@ -126,7 +156,12 @@ public class WebSocket {
 		
 		 for (Session peer : s.getOpenSessions()) {
 	        	if(peer.getUserProperties().get("user").toString().equals(m.getReciver())) {
-	        		peer.getBasicRemote().sendText(m.getContent());
+	        		try {
+						peer.getBasicRemote().sendObject(m);
+					} catch (EncodeException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	        	
 	        }
 		 }

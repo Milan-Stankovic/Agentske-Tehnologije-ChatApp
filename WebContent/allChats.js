@@ -59,7 +59,9 @@
 		        		  date+=" has been created.\n You have been added to that group.";
 		        		  data = date; 
 		                  $scope.notifications.push(data);  
-		                  $scope.$apply($scope.notifications);
+		                  if(!$scope.$$phase) {
+		                	   $scope.$apply($scope.notifications);
+		                	 }
         	  		  },
         	  		  function(){
         	  			  alert("Error loading group name");
@@ -181,12 +183,13 @@
         	$scope.showAllChats=true;
         }
     	
-    	$scope.otvoriChatGrupa = function(id){
+    	$scope.otvoriChatGrupa = function(id, name){
     		
 
     		$scope.isGrupa = true;
     		
     		$scope.chat.id = id;
+    		$scope.chat.name = name;
     		
     		
     	  	var user = $window.localStorage.getItem("user");
@@ -198,7 +201,10 @@
             	   var poruke = response.data;
                    console.log(poruke);
                    $scope.chat.messages=poruke;
-                   $scope.$apply($scope.chat);
+                   
+                   if(!$scope.$$phase) {
+                	   $scope.$apply($scope.chat);
+                	 }
                    
                    }, function errorCallback(response) {
                     $scope.message="Error.";
@@ -218,7 +224,9 @@
               console.log("Received data from websocket: ", messageObj);
               
               $scope.chat.messages.push(data);
-              $scope.$apply($scope.chat);
+              if(!$scope.$$phase) {
+           	   $scope.$apply($scope.chat);
+           	 }
               
               
             }
@@ -266,22 +274,25 @@
     		}
     		
     		
-    		 var defer = $q.defer();
+    		/* var defer = $q.defer();
              var callbackId = getCallbackId();
              callbacks[callbackId] = {
                time: new Date(),
                cb:defer
              };
              request.callback_id = callbackId;
+             */
              console.log('Sending message', data);
              wsChat.send(JSON.stringify(data));
              
              $scope.chat.messages.push(data);
-             $scope.$apply($scope.chat);
+             if(!$scope.$$phase) {
+          	   $scope.$apply($scope.chat);
+          	 }
              
+             return;
              
-             
-             return defer.promise;
+           //  return defer.promise;
     		
     		
     		
