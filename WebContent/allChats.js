@@ -155,7 +155,7 @@
         	
         	
         	var user = $window.localStorage.getItem("user");
-    		console.log(username);
+    		console.log(user);
     		 $http({
                  method: 'GET',
                  url: 'http://localhost:8096/ChatApp/rest/users/getMessages/user/'+user+'/from/N/'+ username 
@@ -190,7 +190,7 @@
     		
     		
     	  	var user = $window.localStorage.getItem("user");
-    		console.log(username);
+    		console.log(user);
     		 $http({
                  method: 'GET',
                  url: 'http://localhost:8096/ChatApp/rest/users/getMessages/user/'+user+'/from/Y/'+ id 
