@@ -17,6 +17,14 @@ angular.module('app')
             };
             $http(req).then(onSuccess, onError);
         }	,
+        newGroup: function (dto, onSuccess, onError) {
+            var req = {
+                method: 'POST',
+                url: 'http://localhost:8096/ChatApp/rest/proxy/groups',
+                data: dto
+            };
+            $http(req).then(onSuccess, onError);
+        }	,
         accFriend: function (dto, onSuccess, onError) {
             var req = {
                 method: 'PUT',

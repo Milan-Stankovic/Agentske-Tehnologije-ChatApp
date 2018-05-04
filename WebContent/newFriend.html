@@ -18,6 +18,12 @@
 Enter username for new freiend:<br/>
 <input type="text" name="userName" ng-model="newUserName"></td><br/>
 <button ng-click="addNew()">Add friend</button>
+<br/>
+Enter name for new group:<br/>
+<input type="text" name="userName" ng-model="newGroupname"></td><br/>
+Enter usernames for new group:(first one admin, no spaces)<br/>
+<input type="text" name="userName" ng-model="newGroupStr"></td><br/>
+<button ng-click="addNewGroup()">Add groupp</button>
 	
 <h3>Prijatelji:</h3>
 <div ng-repeat="acc in acc">

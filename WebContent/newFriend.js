@@ -49,6 +49,31 @@
     		)
     	}
     	
+    	$scope.addNewGroup = function(){
+    		var partsOfStr = $scope.newGroupStr.split(',');
+    		var usersDtoArr = [];
+    		var temp = $scope.newGroupname;
+    		for(var i=0;i<partsOfStr.length;i++){
+    			usersDtoArr.push({"username":partsOfStr[i]});
+    		}
+    		usersDtoArr.push({"username":$window.localStorage.getItem("user")});
+    		var dto = {
+    				"name":temp,
+    				"admin":usersDtoArr[0].username,
+    				"users":usersDtoArr
+    		}
+    		console.log(JSON.stringify(dto));
+    		service.newGroup(dto,
+    				function(info){
+    					alert("Uspelo i slanje i notifikacija")
+    				},
+    				function(){
+    					alert("Neka notifikacija nije prosla.")
+    				}
+    		)
+    		
+    	}
+    	
     	var getDTO = function(targetId){
     		return {
     	        "id":"0",
