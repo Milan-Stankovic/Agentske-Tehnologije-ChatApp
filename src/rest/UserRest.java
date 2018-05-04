@@ -547,19 +547,14 @@ public class UserRest {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public void getMessage(Message m) {
-		try {
-			if(m.getGroupId().equals(""))
+
+		    try {
 				ws.forwardMessage(m);
-			else {
-				 ObjectMapper mapper = new ObjectMapper();
-		         String json = mapper.writeValueAsString(m);
-		         messageDb.getCollection().insertOne(Document.parse(json));
-		         ws.forwardMessage(m);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		
 	}
 

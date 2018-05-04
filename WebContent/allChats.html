@@ -12,29 +12,50 @@
 
 <div ng-controller="allChatsController" >
 
-	<h1>Moguci chatovi :</h1>
-
-	<h2>Svi prijatelji :</h2>
- 	<span ng-repeat=" prijatelj in sviPrijatelji track by $index">
-		<div>
-			<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChat(prijatelj.username)">{{prijatelj.username}}</a></h4>  
-       </div>
-    </span>
+	<div ng-show="showAllChats" >
+		<h1>Moguci chatovi :</h1>
+	
+		<h2>Svi prijatelji :</h2>
+	 	<span ng-repeat=" prijatelj in sviPrijatelji track by $index">
+			<div>
+				<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChat(prijatelj.username)">{{prijatelj.username}}</a></h4>  
+			</div>
+	    </span>
+	    
+	    <h2>Sve grupe :</h2>
+	 	<span ng-repeat=" grupa in sveGrupe">
+			<div>
+				<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChatGrupa(grupa.id)">{{grupa.name}}</a></h4>
+	  		</div>
+	    </span>
+	</div>
     
-    <h2>Sve grupe :</h2>
- 	<span ng-repeat=" grupa in sveGrupe">
-		<div>
-			<h4> <a style="color:blue;cursor:pointer;" ng-click="otvoriChatGrupa(grupa.id)">{{grupa.name}}</a></h4>
-  
-             </div>
-    </span>
+    <div ng-hide="showAllChats">
+		<div ng-show="isGrupa"> <h2> Grupa : {{chat.id}} </h2> </div>
+		<div ng-hide="isGrupa"> <h2> Prijatelj : {{chat.id}} </h2> </div>
+		</br>
+		</br>
+		
+		<div ng-repeat="message in chat.messages">
+     		<p>[{{message.sender}}] : {{message.content}}  </p>
+     
+     	</div>
+     	
+     	<textarea  ng-model="newMessage" rows="3" cols="40" id="newMessage"> </textarea>
+		</br>
+		<button  ng-click="sendMessage(chat.id, newMessage, isGrupa)"> Posalji </button>
+		
     
-    <div>
+    </div>
+    
+    
+    
+    <div ng-show="showNotifications" >
     
     <br/>
     <br/>
     
-    <h4>Notifikacije : </h4>
+    <h4 style="cursor:pointer;" ng-click="skloniNotifikacije()">Notifikacije : </h4>
     <div ng-repeat="notification in notifications">
      		<p> {{notification}} </p>
      

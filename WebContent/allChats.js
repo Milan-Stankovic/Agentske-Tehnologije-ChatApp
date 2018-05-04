@@ -10,13 +10,18 @@
   
     	$scope.sviPrijatelji =[];
     	$scope.sveGrupe = [];
-    	$scope.otvoriChat = function(username){
-    		
-    	}
+    	$scope.isGrupa=false;
+    	$scope.chat={};
+    	
+    	$scope.showNotifications=true;
+    	$scope.showAllChats=true;
     	
     	$scope.notifications=[];
     	//$scope.notification.text="";
     	
+    	$scope.skloniNotifikacije = function(){
+    		$scope.showNotifications= !	$scope.showNotifications;
+    	}
     	
     	var ws = new WebSocket("ws://localhost:8096/ChatApp/notification/"+$window.localStorage.getItem("user"));
         
@@ -27,19 +32,20 @@
         ws.onmessage = function(message) {
             listener(JSON.parse(message.data));
         };
+        
+        
+        var wsChat = new WebSocket("ws://localhost:8096/ChatApp/chat/"+$window.localStorage.getItem("user"));
+        
+        wsChat.onopen = function(){  
+            console.log("Chat socket has been opened!");  
+        };
+        
+        wsChat.onmessage = function(message) {
+            parseChat(JSON.parse(message.data));
+        };
 
-        function sendRequest(request) {
-          var defer = $q.defer();
-          var callbackId = getCallbackId();
-          callbacks[callbackId] = {
-            time: new Date(),
-            cb:defer
-          };
-          request.callback_id = callbackId;
-          console.log('Sending request', request);
-          ws.send(JSON.stringify(request));
-          return defer.promise;
-        }
+        
+      
 
         function listener(data) {
           var messageObj = data;
@@ -115,13 +121,210 @@
         
         
     	
-    	
-    	
-    	
-    	
-    	$scope.otvoriChatGrupa = function(username){
+        $scope.otvoriChat = function(username){
+       
+        	
+        	$scope.isGrupa = false;
+        	
+        	$scope.chat.id = username;
+        	
+        	
+        	var user = $window.localStorage.getItem("user");
+    		console.log(username);
+    		 $http({
+                 method: 'GET',
+                 url: 'http://localhost:8096/ChatApp/rest/users/getMessages/user/'+user+'/from/N/'+ username 
+               }).then(function successCallback(response) {
+                   var poruke = response.data;
+                   console.log(poruke);
+                   $scope.chat.messages=poruke;
+                   $scope.$apply($scope.chat);
+                   
+                   }, function errorCallback(response) {
+                    $scope.message="Error.";
+
+                   });
+
+    		$scope.showAllChats=false;
+    		
+    		
     		
     	}
+    	
+    	
+        $scope.seeAllChats = function(){
+        	$scope.showAllChats=true;
+        }
+    	
+    	$scope.otvoriChatGrupa = function(id){
+    		
+
+    		$scope.isGrupa = true;
+    		
+    		$scope.chat.id = id;
+    		
+    		
+    	  	var user = $window.localStorage.getItem("user");
+    		console.log(username);
+    		 $http({
+                 method: 'GET',
+                 url: 'http://localhost:8096/ChatApp/rest/users/getMessages/user/'+user+'/from/Y/'+ id 
+               }).then(function successCallback(response) {
+            	   var poruke = response.data;
+                   console.log(poruke);
+                   $scope.chat.messages=poruke;
+                   $scope.$apply($scope.chat);
+                   
+                   }, function errorCallback(response) {
+                    $scope.message="Error.";
+
+                   });
+    		
+    		
+    		
+    		
+    		$scope.showAllChats=false;
+    		
+    	}
+    	
+    	
+    	  function parseChat(data) {
+              var messageObj = data;
+              console.log("Received data from websocket: ", messageObj);
+              
+              $scope.chat.messages.push(data);
+              $scope.$apply($scope.chat);
+              
+              
+            }
+          
+          
+
+          function sendRequest(request) {
+            var defer = $q.defer();
+            var callbackId = getCallbackId();
+            callbacks[callbackId] = {
+              time: new Date(),
+              cb:defer
+            };
+            request.callback_id = callbackId;
+            console.log('Sending request', request);
+            ws.send(JSON.stringify(request));
+            return defer.promise;
+          }
+    	
+    	
+    	$scope.sendMessage = function(komeId, newMessage, isGroup){
+ 
+    		var user = $window.localStorage.getItem("user");
+    		
+    		
+    		var data={};
+    		
+    		if(isGroup){
+    			data=  {
+            			"id" : 	"",
+            			"sender" : user, 
+            			"reciver" : "",
+            			"content" : newMessage,
+            			"groupId" : komeId
+            		}
+    		}else{
+    			data=  {
+            			"id" : 	"",
+            			"sender" : user, 
+            			"reciver" : komeId,
+            			"content" : newMessage,
+            			"groupId" : ""
+            			
+            		}
+    		}
+    		
+    		
+    		 var defer = $q.defer();
+             var callbackId = getCallbackId();
+             callbacks[callbackId] = {
+               time: new Date(),
+               cb:defer
+             };
+             request.callback_id = callbackId;
+             console.log('Sending message', data);
+             wsChat.send(JSON.stringify(data));
+             
+             $scope.chat.messages.push(data);
+             $scope.$apply($scope.chat);
+             
+             
+             
+             return defer.promise;
+    		
+    		
+    		
+    		
+    		
+    	/*	var user = $window.localStorage.getItem("user");
+    		
+    		
+    		var data={};
+    		
+    		if(isGroup){
+    			data=  {
+            			"id" : 	"",
+            			"sender" : user, 
+            			"reciver" : "",
+            			"content" : newMessage,
+            			"groupId" : komeId
+            		}
+    			
+    			 $http({
+                     method: 'POST',
+                     url: 'http://localhost:8096/ChatApp/rest/users/forwardGroupMessage', 
+                     data: data
+                   }).then(function successCallback(response) {
+                	   
+                       $scope.chat.messages.push(data);
+                       $scope.$apply($scope.chat);
+                       
+                       }, function errorCallback(response) {
+                        $scope.message="Error.";
+
+                       });
+    			
+    			
+    			
+    			
+    			
+    			
+    		}else{
+    			data=  {
+            			"id" : 	"",
+            			"sender" : user, 
+            			"reciver" : komeId,
+            			"content" : newMessage,
+            			"groupId" : ""
+            			
+            		}
+    			
+    			 $http({
+                     method: 'POST',
+                     url: 'http://localhost:8096/ChatApp/rest/users/forwardMessage', 
+                     data: data
+                   }).then(function successCallback(response) {
+                	   
+                       $scope.chat.messages.push(data);
+                       $scope.$apply($scope.chat);
+                       
+                       }, function errorCallback(response) {
+                        $scope.message="Error.";
+
+                       });
+    			
+    		}
+    		*/
+
+    	
+    	}
+    	
     	
     	$scope.getAllFriends= function(){
     		

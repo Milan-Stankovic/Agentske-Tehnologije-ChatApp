@@ -14,6 +14,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 
 import org.bson.Document;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -90,7 +91,7 @@ public class WebSocket {
 		        	}
 		        if(!poslao) {
 		        	
-		        	 Document found = (Document) userDatabase.getCollection().find(new Document("username", m.getReciver()));
+		        	 Document found = (Document) userDatabase.getCollection().find(new Document("username", m.getReciver())).first();
 		        	 if(found != null) {
 		        		  Gson gson = new Gson();
 		        		  User person = gson.fromJson(found.toJson(), User.class);   
@@ -99,7 +100,7 @@ public class WebSocket {
 		        		  ResteasyWebTarget target = rClient.target(
 	      						"http://" + person.getHostIp() + ":8096/ChatApp/users/sendMessage/");
 		  				
-		  				Response response = target.request().post(Entity.entity( m , "application/vnd.com.demo.user-management.user+xml;charset=UTF-8;version=1"));
+		        		  Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(m, MediaType.APPLICATION_JSON));
 		        	 }
 		        	     
 		        }
@@ -109,7 +110,7 @@ public class WebSocket {
 	
 	
 	private void sendGroup(Session client, Message m) throws IOException {
-		 Document found = (Document) groupDatabase.getCollection().find(new Document("id", m.getGroupId()));
+		 Document found = (Document) groupDatabase.getCollection().find(new Document("id", m.getGroupId())).first();
 		 if(found !=null) {
 			Gson gson = new Gson();
    	      	Group group = gson.fromJson(found.toJson(), Group.class);   
