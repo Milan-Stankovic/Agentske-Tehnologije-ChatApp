@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Login</title>
+<script src="angular.js"></script>
+<script src="angular-cookies.js"></script>
+<script src="newFriend.js"></script>
+<script src="services.js"></script>
+
+</head>
+<body ng-app="app">
+
+<div ng-controller="newFriendCtrl" >
+
+<h2>Add new friends:</h2>
+
+Enter username for new freiend:<br/>
+<input type="text" name="userName" ng-model="newUserName"></td><br/>
+<button ng-click="addNew()">Add friend</button>
+	
+	
+
+</div>
+	
+</body>
+</html>
