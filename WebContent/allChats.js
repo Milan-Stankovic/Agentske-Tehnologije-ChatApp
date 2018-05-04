@@ -76,7 +76,10 @@
 		        		  date+=" has been removed.\n You have been removed from that group.";
 		        		  data = date; 
 		                  $scope.notifications.push(data);  
-		                  $scope.$apply($scope.notifications);
+		                  if(!$scope.$$phase) {
+		                	  $scope.$apply($scope.notifications);
+		                	 }
+		                 
         	  		  },
         	  		  function(){
         	  			  alert("Error loading group name");
@@ -87,31 +90,41 @@
         	  date+="Your friend "+messageObj.userId + " has just logged in!";
         	  data = date; 
               $scope.notifications.push(data);  
-              $scope.$apply($scope.notifications);
+              if(!$scope.$$phase) {
+            	  $scope.$apply($scope.notifications);
+            	 }
           }
           else if(messageObj.type=="LOGOUT"){
         	  date+="Your friend "+messageObj.userId + " has just logged out!";
         	  data = date; 
               $scope.notifications.push(data);  
-              $scope.$apply($scope.notifications);
+              if(!$scope.$$phase) {
+            	  $scope.$apply($scope.notifications);
+            	 }
           }
           else if(messageObj.type=="ACCEPTED"){
         	  date+="Your friend "+messageObj.userId + " has just accepted your friendship request!";
         	  data = date; 
               $scope.notifications.push(data);  
-              $scope.$apply($scope.notifications);
+              if(!$scope.$$phase) {
+            	  $scope.$apply($scope.notifications);
+            	 };
           }
           else if(messageObj.type=="REMOVED"){
         	  date+="Your friend "+messageObj.userId + " has just removed you from friends!";
         	  data = date; 
               $scope.notifications.push(data);  
-              $scope.$apply($scope.notifications);
+              if(!$scope.$$phase) {
+            	  $scope.$apply($scope.notifications);
+            	 }
           }
           else if(messageObj.type=="PENDING"){
         	  date+=""+messageObj.userId + " has just sent you a friendship request!";
         	  data = date; 
               $scope.notifications.push(data);  
-              $scope.$apply($scope.notifications);
+              if(!$scope.$$phase) {
+            	  $scope.$apply($scope.notifications);
+            	 }
           }
           else if(messageObj.type=="GROUPNEWUSER"){
         	  date+="User " +messageObj.userId+ " has been added to group ";
@@ -120,7 +133,9 @@
         		  		date+=info.data.name;
         		  		data = date; 
         		          $scope.notifications.push(data);  
-        		          $scope.$apply($scope.notifications);
+        		          if(!$scope.$$phase) {
+		                	  $scope.$apply($scope.notifications);
+		                	 }
         	  		  },
         	  		  function(){
         	  			  alert("Error loading group name");
@@ -135,7 +150,9 @@
 		        		  date+=" has been removed."
 		        			  data = date; 
 		                  $scope.notifications.push(data);  
-		                  $scope.$apply($scope.notifications);
+		                  if(!$scope.$$phase) {
+		                	  $scope.$apply($scope.notifications);
+		                	 }
         	  		  },
         	  		  function(){
         	  			  alert("Error loading group name");
@@ -165,7 +182,10 @@
                    var poruke = response.data;
                    console.log(poruke);
                    $scope.chat.messages=poruke;
-                   $scope.$apply($scope.chat);
+                   
+                   if(!$scope.$$phase) {
+                	   $scope.$apply($scope.chat);
+	                	 }
                    
                    }, function errorCallback(response) {
                     $scope.message="Error.";

@@ -184,6 +184,8 @@ public class UserRest {
 			
 		}else {
 
+			System.out.println("OSOBE SU : "+userName + " I : " + id);
+			
 		  	Document or1 = new Document(
 		  		  "$and", Arrays.asList(
 		  		    new Document("sender", userName),
@@ -205,12 +207,14 @@ public class UserRest {
 			  		  or2
 			  		  )
 			  		);
-			
+			System.out.println("QUERY ZA PORUKE JE : " + query);
 		
 			
 			 @SuppressWarnings("unchecked")
-	  	     FindIterable<Document> docs = userDatabase.getCollection().find(query).sort(new Document("created_at",1));//valjda sortira
+	  	     FindIterable<Document> docs = messageDb.getCollection().find(query).sort(new Document("created_at",1));//valjda sortira
 	  	     for (Document doc : docs) {
+	  	    	 
+	  	    	System.out.println("NASAO PORUKU");
 	  	    	 Message m = gson.fromJson(doc.toJson(), Message.class);
 	  	    	 messages.add(m);
 	  	     }

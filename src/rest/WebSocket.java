@@ -13,8 +13,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.bson.Document;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -30,7 +30,6 @@ import dbClasses.MessageDatabase;
 import dbClasses.UserDatabase;
 import encoderDecoder.MessageDecoder;
 import encoderDecoder.MessageEncoder;
-import encoderDecoder.NotificationDTOEncoder;
 import model.FriendshipStatus;
 import model.Group;
 import model.Message;
@@ -78,7 +77,7 @@ public class WebSocket {
 		Document searchBy = new Document();
         searchBy.append("sender", m.getSender());
         searchBy.append("reciever", m.getReciver());
-        searchBy.append("status", FriendshipStatus.ACCEPTED);
+        searchBy.append("status", FriendshipStatus.ACCEPTED.toString());
         Document found = (Document) friendDatabase.getCollection().find(searchBy).first();
         
         return found!=null;
@@ -88,12 +87,7 @@ public class WebSocket {
 	
 	private void sendPrivate(Session client, Message m) throws IOException {
 		 boolean poslao = false;
-		 
-		 System.out.println("UPAO U PRIVATNE");
-		 if(m.getGroupId().equals("")) {
-			if(!isFriend(m))
-				return;
-		 }
+
 		 
 		 
 		  ObjectMapper mapper = new ObjectMapper();
